@@ -1,5 +1,5 @@
-export { createMock } from "./createMock";
-export type { CreateMockOptions } from "./createOptions";
+export { createMock } from "./lib/createMock";
+export type { CreateMockOptions } from "./lib/createOptions";
 export type {
   AnyFunction,
   DeepMockProxy,
@@ -7,4 +7,4 @@ export type {
   MethodMock,
   MockFactory,
   MockProxy,
-} from "./types";
+} from "./lib/types";

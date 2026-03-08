@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { createMock } from ".";
-import { createTestMockFunction } from "./test-utils/testMockFn";
+import { createMock } from "..";
+import { createTestMockFunction } from "../test-utils/testMockFn";
 
 describe("createMock", () => {
   test("creates methods lazily", () => {
