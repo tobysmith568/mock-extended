@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "lint": "biome check .",
+    "lint:ci": "biome ci .",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "bun test src"
   },
