@@ -32,11 +32,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown --watch",
+    "lint": "biome check .",
     "typecheck": "tsc --noEmit",
-    "typecheck:spec": "tsc --project tsconfig.spec.json",
-    "test": "bun test test"
+    "typecheck:test": "tsc --noEmit --project tsconfig.spec.json",
+    "build": "tsdown",
+    "test": "bun test src"
   },
   "devDependencies": {
     "tsdown": "^0.18.1"

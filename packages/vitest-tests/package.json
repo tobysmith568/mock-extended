@@ -3,8 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "test": "vitest run --config ./vitest.config.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "check": "biome check .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run --config ./vitest.config.ts"
   },
   "dependencies": {
     "mock-extended": "workspace:*"

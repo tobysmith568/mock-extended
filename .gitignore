@@ -21,3 +21,6 @@ coverage/
 
 # misc
 .DS_Store
+
+# Turborepo
+.turbo

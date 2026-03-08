@@ -3,8 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "test": "node --import tsx --test src/**/*.test.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "check": "biome check .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --import tsx --test src/**/*.test.ts"
   },
   "dependencies": {
     "mock-extended": "workspace:*"

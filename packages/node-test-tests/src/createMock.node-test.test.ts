@@ -7,7 +7,8 @@ describe("mock-extended with node:test mock.fn", () => {
     doWork: (arg: string) => number;
   };
 
-  const createMockFn = () => mock.fn((..._args: any[]): any => undefined);
+  const createMockFn = () =>
+    mock.fn((..._args: unknown[]): unknown => undefined);
 
   it("creates method mocks lazily from mock.fn() factory", () => {
     const factory = mock.fn(() => createMockFn());

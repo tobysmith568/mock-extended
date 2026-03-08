@@ -3,8 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "test": "bun test src",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "lint": "biome check .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test src"
   },
   "dependencies": {
     "mock-extended": "workspace:*"

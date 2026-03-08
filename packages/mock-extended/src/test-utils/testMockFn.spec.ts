@@ -13,8 +13,9 @@ describe("createTestMockFunction", () => {
   test("records calls and returns undefined by default", () => {
     const fn = createTestMockFunction();
 
-    const _result = fn("a", 123);
+    const result = fn("a", 123);
 
+    expect(result).toBeUndefined();
     expect(fn.calls).toEqual([["a", 123]]);
   });
 
