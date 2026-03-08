@@ -10,7 +10,10 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "test": "bun test",
+    "test:bun-tests": "bun --cwd packages/bun-tests run test",
     "test:jest-tests": "bun --cwd packages/jest-tests run test",
+    "test:node-test-tests": "bun --cwd packages/node-test-tests run test",
+    "test:sinon-tests": "bun --cwd packages/sinon-tests run test",
     "test:vitest-tests": "bun --cwd packages/vitest-tests run test",
     "typecheck": "tsc -b"
   },

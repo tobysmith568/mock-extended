@@ -1,0 +1,16 @@
+{
+  "name": "sinon-tests",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "test": "bun test src",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "mock-extended": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/sinon": "^17.0.4",
+    "sinon": "^19.0.2"
+  }
+}

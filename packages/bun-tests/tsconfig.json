@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "mock-extended": ["../mock-extended/src/index.ts"]
+    },
+    "types": ["node", "bun"],
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}
