@@ -1,0 +1,21 @@
+{
+  "name": "mock-extended",
+  "private": true,
+  "packageManager": "bun@1.2.5",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "typecheck": "tsc -b",
+    "ci": "bun run check && bun run typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "typescript": "^5.8.0"
+  }
+}

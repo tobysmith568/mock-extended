@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# bun
+.bun/
+bun.lockb
+
+# build outputs
+dist/
+build/
+coverage/
+.next/
+
+# typescript
+*.tsbuildinfo
+
+# environment
+.env
+.env.*
+!.env.example
+
+# misc
+.DS_Store
