@@ -1,0 +1,16 @@
+{
+  "name": "vitest-tests",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "test": "vitest run --config ./vitest.config.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "mock-extended": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "vitest": "^3.2.4"
+  }
+}
