@@ -20,6 +20,9 @@
     },
     "test": {
       "dependsOn": ["^test"]
+    },
+    "pack": {
+      "dependsOn": ["^pack"]
     }
   }
 }

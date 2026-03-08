@@ -29,14 +29,16 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.cts",
   "files": [
-    "dist"
+    "dist",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
     "lint": "biome check .",
     "typecheck": "tsc --noEmit",
     "typecheck:test": "tsc --noEmit --project tsconfig.spec.json",
     "build": "tsdown",
-    "test": "bun test src"
+    "test": "bun test src",
+    "pack": "npm pack"
   },
   "devDependencies": {
     "tsdown": "^0.18.1"
