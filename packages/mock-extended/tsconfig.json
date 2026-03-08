@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "noUnusedLocals": true
+  },
+  "include": ["src"]
+}
