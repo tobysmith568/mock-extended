@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-
 import { createProxifyValue } from "./createProxifyValue";
 import { isPlainObject } from "./isPlainObject";
 

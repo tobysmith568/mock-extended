@@ -2,16 +2,21 @@
   "name": "mock-extended",
   "type": "module",
   "version": "0.0.0",
-  "description": "",
-  "author": "",
+  "description": "Mock TypeScript interfaces and classes with ease, supporting any and all mocking libraries.",
+  "author": {
+    "name": "Toby Smith",
+    "email": "contact@tobythe.dev",
+    "url": "https://tobysmith.uk"
+  },
   "license": "ISC",
-  "homepage": "",
+  "homepage": "https://github.com/tobysmith568/mock-extended#readme",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/tobysmith568/mock-extended.git",
+    "directory": "packages/mock-extended"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/tobysmith568/mock-extended/issues"
   },
   "exports": {
     ".": {
@@ -34,7 +39,6 @@
     "test": "bun test test"
   },
   "devDependencies": {
-    "@types/node": "^25.0.3",
     "tsdown": "^0.18.1"
   }
 }

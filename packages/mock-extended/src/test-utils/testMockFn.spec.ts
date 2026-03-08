@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-
 import { createTestMockFunction } from "./testMockFn";
 
 describe("createTestMockFunction", () => {
