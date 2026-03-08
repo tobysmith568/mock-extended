@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!**/node_modules", "!**/.git", "!**/dist", "!**/build", "!**/.next", "!**/coverage"]
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/.git",
+      "!**/dist",
+      "!**/build",
+      "!**/.next",
+      "!**/coverage"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -17,6 +25,13 @@
     "enabled": true,
     "rules": {
       "recommended": true
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
     }
   }
 }
