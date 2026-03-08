@@ -27,6 +27,7 @@
     "build": "tsdown",
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit",
+    "typecheck:spec": "tsc --project tsconfig.spec.json",
     "test": "bun test test"
   },
   "devDependencies": {

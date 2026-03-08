@@ -5,12 +5,29 @@ export interface CreateMockOptions {
    * @default ["then"]
    */
   ignoredProps?: readonly string[];
+
+  /**
+   * When true, nested property access will also be mocked recursively.
+   *
+   * @default false
+   */
+  deep?: boolean;
+
+  /**
+   * When true (with `deep`), function properties can also expose deep mocked
+   * nested members.
+   *
+   * @default false
+   */
+  funcPropSupport?: boolean;
 }
 
 const defaultIgnoredProps = ["then"] as const;
 
 const defaultOptions: Required<CreateMockOptions> = {
   ignoredProps: defaultIgnoredProps,
+  deep: false,
+  funcPropSupport: false,
 };
 
 export const createOptions = (
