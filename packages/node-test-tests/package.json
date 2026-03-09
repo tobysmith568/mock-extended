@@ -6,7 +6,7 @@
     "lint": "biome check .",
     "lint:ci": "biome ci .",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "node --import tsx --test src/**/*.test.ts"
+    "test": "node --import tsx --test src/createMock.node-test.test.ts"
   },
   "dependencies": {
     "mock-extended": "workspace:*"
