@@ -3,6 +3,19 @@
   "type": "module",
   "version": "0.0.0",
   "description": "Mock TypeScript interfaces and classes with ease, supporting any and all mocking libraries.",
+  "keywords": [
+    "mock",
+    "mocking",
+    "stubs",
+    "fakes",
+    "test-doubles",
+    "typescript",
+    "interface",
+    "jest",
+    "vitest",
+    "sinon",
+    "bun"
+  ],
   "author": {
     "name": "Toby Smith",
     "email": "contact@tobythe.dev",
