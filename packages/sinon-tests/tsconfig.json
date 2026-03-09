@@ -8,7 +8,7 @@
     "paths": {
       "mock-extended": ["../mock-extended/src/index.ts"]
     },
-    "types": ["node", "bun"],
+    "types": ["bun"],
     "noEmit": true
   },
   "include": ["src/**/*.ts"]
