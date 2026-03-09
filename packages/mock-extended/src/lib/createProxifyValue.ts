@@ -1,11 +1,13 @@
 interface CreateProxifyValueParams {
   deep: boolean;
+  funcPropSupport: boolean;
   isPlainObject: (value: unknown) => value is Record<PropertyKey, unknown>;
   getHandler: () => ProxyHandler<object>;
 }
 
 export const createProxifyValue = ({
   deep,
+  funcPropSupport,
   isPlainObject,
   getHandler,
 }: CreateProxifyValueParams) => {
@@ -16,7 +18,7 @@ export const createProxifyValue = ({
       return value;
     }
 
-    if (typeof value === "function") {
+    if (funcPropSupport && typeof value === "function") {
       const cached = proxyCache.get(value);
       if (cached) {
         return cached;

@@ -24,7 +24,7 @@ describe("createMockHandler", () => {
     expect(calls).toBe(1);
   });
 
-  test("returns undefined for ignored properties and calls", () => {
+  test("returns undefined for ignored properties", () => {
     const handler = createMockHandler({
       ignoredProps: new Set(["then"]),
       factory: () => () => undefined,
@@ -32,10 +32,9 @@ describe("createMockHandler", () => {
       proxifyValue: (value) => value,
     });
 
-    const proxy = new Proxy({}, handler) as { then?: unknown; calls?: unknown };
+    const proxy = new Proxy({}, handler) as { then?: unknown };
 
     expect(proxy.then).toBeUndefined();
-    expect(proxy.calls).toBeUndefined();
   });
 
   test("proxifies existing and assigned values", () => {

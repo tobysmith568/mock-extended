@@ -20,6 +20,7 @@ export const createMock = <
 
   const proxifyValue = createProxifyValue({
     deep: allOptions.deep,
+    funcPropSupport: allOptions.funcPropSupport,
     isPlainObject,
     getHandler: () => handler,
   });

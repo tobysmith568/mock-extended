@@ -69,7 +69,11 @@ describe("mock-extended with Jest", () => {
   });
 
   test("supports deep recursive mocks", () => {
-    const mock = createMock(() => jest.fn(), { deep: true });
+    const mock = createMock(() => jest.fn(), {
+      deep: true,
+      ignoredProps: ["calls"],
+      funcPropSupport: true,
+    });
 
     type DeepDependency = {
       nested: {

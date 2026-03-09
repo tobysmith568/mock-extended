@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it, mock } from "node:test";
+import { describe, it, mock as nodeMock } from "node:test";
 import { createMock } from "mock-extended";
 
 describe("mock-extended with node:test mock.fn", () => {
@@ -8,13 +8,13 @@ describe("mock-extended with node:test mock.fn", () => {
   };
 
   const createMockFn = () =>
-    mock.fn((..._args: unknown[]): unknown => undefined);
+    nodeMock.fn((..._args: unknown[]): unknown => undefined);
 
   it("creates method mocks lazily from mock.fn() factory", () => {
-    const factory = mock.fn(() => createMockFn());
-    const create = createMock(factory);
+    const factory = nodeMock.fn(() => createMockFn());
+    const mock = createMock(factory);
 
-    const dep = create<Dependency>();
+    const dep = mock<Dependency>();
 
     assert.equal(factory.mock.calls.length, 0);
 
@@ -26,10 +26,10 @@ describe("mock-extended with node:test mock.fn", () => {
   });
 
   it("supports configurable return values on generated methods", () => {
-    const create = createMock(createMockFn);
-    const dep = create<Dependency>();
+    const mock = createMock(createMockFn);
+    const dep = mock<Dependency>();
 
-    const doWorkMock = mock.fn(() => 42);
+    const doWorkMock = nodeMock.fn(() => 42);
     dep.doWork = doWorkMock as unknown as typeof dep.doWork;
 
     assert.equal(dep.doWork("abc"), 42);
@@ -37,8 +37,8 @@ describe("mock-extended with node:test mock.fn", () => {
   });
 
   it("exposes node:test mock call metadata", () => {
-    const create = createMock(createMockFn);
-    const dep = create<Dependency>();
+    const mock = createMock(createMockFn);
+    const dep = mock<Dependency>();
 
     dep.doWork("abc");
     dep.doWork("def");
@@ -48,10 +48,10 @@ describe("mock-extended with node:test mock.fn", () => {
   });
 
   it("ignores then by default", () => {
-    const factory = mock.fn(() => createMockFn());
-    const create = createMock(factory);
+    const factory = nodeMock.fn(() => createMockFn());
+    const mock = createMock(factory);
 
-    const dep = create<{ then: () => void; doWork: () => void }>();
+    const dep = mock<{ then: () => void; doWork: () => void }>();
 
     assert.equal(dep.then, undefined);
 
@@ -61,16 +61,19 @@ describe("mock-extended with node:test mock.fn", () => {
   });
 
   it("supports deep recursive mocks", () => {
-    const create = createMock(createMockFn, { deep: true });
+    const mock = createMock(createMockFn, {
+      deep: true,
+      funcPropSupport: true,
+    });
 
-    const dep = create<{
+    const dep = mock<{
       nested: {
         service: {
           run: (arg: string) => string;
         };
       };
     }>();
-    const runMock = mock.fn(() => "ok");
+    const runMock = nodeMock.fn(() => "ok");
     dep.nested.service.run =
       runMock as unknown as typeof dep.nested.service.run;
 
@@ -102,13 +105,13 @@ describe("mock-extended with node:test mock.fn", () => {
       };
     };
 
-    const create = createMock(createMockFn, { deep: true });
-    const dep = create<{ counter: Counter; plain: typeof plain }>({
+    const mock = createMock(createMockFn, { deep: true });
+    const dep = mock<{ counter: Counter; plain: typeof plain }>({
       counter,
       plain,
     });
 
-    const runMock = mock.fn(() => 3);
+    const runMock = nodeMock.fn(() => 3);
     dep.plain.nested.run = runMock as unknown as typeof dep.plain.nested.run;
 
     assert.equal(dep.counter as unknown as Counter, counter);

@@ -59,7 +59,10 @@ describe("mock-extended with Sinon", () => {
   });
 
   test("supports deep recursive mocks", () => {
-    const mock = createMock(() => sinon.stub(), { deep: true });
+    const mock = createMock(() => sinon.stub(), {
+      deep: true,
+      funcPropSupport: true,
+    });
 
     type DeepDependency = {
       nested: {

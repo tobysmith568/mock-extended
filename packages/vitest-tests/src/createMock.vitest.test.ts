@@ -66,7 +66,10 @@ describe("mock-extended with Vitest", () => {
   });
 
   test("supports deep recursive mocks", () => {
-    const mock = createMock(() => vi.fn(), { deep: true });
+    const mock = createMock(() => vi.fn(), {
+      deep: true,
+      funcPropSupport: true,
+    });
 
     type DeepDependency = {
       nested: {

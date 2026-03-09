@@ -1,4 +1,4 @@
-import { describe, expect, mock, test } from "bun:test";
+import { mock as bunMock, describe, expect, test } from "bun:test";
 import { createMock } from "mock-extended";
 
 describe("mock-extended with Bun", () => {
@@ -7,10 +7,10 @@ describe("mock-extended with Bun", () => {
   };
 
   test("creates method mocks lazily from Bun mock() factory", () => {
-    const factory = mock(() => mock());
-    const create = createMock(factory);
+    const factory = bunMock(() => bunMock());
+    const mock = createMock(factory);
 
-    const dep = create<Dependency>();
+    const dep = mock<Dependency>();
 
     expect(factory).toHaveBeenCalledTimes(0);
 
@@ -22,8 +22,8 @@ describe("mock-extended with Bun", () => {
   });
 
   test("supports Bun mockReturnValue on generated methods", () => {
-    const create = createMock(() => mock());
-    const dep = create<Dependency>();
+    const mock = createMock(() => bunMock());
+    const dep = mock<Dependency>();
 
     dep.doWork.mockReturnValue(42);
 
@@ -32,8 +32,8 @@ describe("mock-extended with Bun", () => {
   });
 
   test("exposes Bun call metadata via mock.calls", () => {
-    const create = createMock(() => mock());
-    const dep = create<Dependency>();
+    const mock = createMock(() => bunMock());
+    const dep = mock<Dependency>();
 
     dep.doWork("abc");
     dep.doWork("def");
@@ -42,10 +42,10 @@ describe("mock-extended with Bun", () => {
   });
 
   test("ignores then by default", () => {
-    const factory = mock(() => mock());
-    const create = createMock(factory);
+    const factory = bunMock(() => bunMock());
+    const mock = createMock(factory);
 
-    const dep = create<{ then: () => void; doWork: () => void }>();
+    const dep = mock<{ then: () => void; doWork: () => void }>();
 
     expect(dep.then).toBeUndefined();
 
@@ -55,7 +55,10 @@ describe("mock-extended with Bun", () => {
   });
 
   test("supports deep recursive mocks", () => {
-    const create = createMock(() => mock(), { deep: true });
+    const mock = createMock(() => bunMock(), {
+      deep: true,
+      funcPropSupport: true,
+    });
 
     type DeepDependency = {
       nested: {
@@ -65,8 +68,8 @@ describe("mock-extended with Bun", () => {
       };
     };
 
-    const dep = create<DeepDependency>();
-    const runMock = mock();
+    const dep = mock<DeepDependency>();
+    const runMock = bunMock();
 
     runMock.mockReturnValue("ok");
     dep.nested.service.run = runMock as typeof dep.nested.service.run;
@@ -94,8 +97,8 @@ describe("mock-extended with Bun", () => {
       };
     };
 
-    const create = createMock(() => mock(), { deep: true });
-    const dep = create<{
+    const mock = createMock(() => bunMock(), { deep: true });
+    const dep = mock<{
       counter: Counter;
       plain: {
         nested: {
@@ -103,7 +106,7 @@ describe("mock-extended with Bun", () => {
         };
       };
     }>({ counter, plain });
-    const runMock = mock();
+    const runMock = bunMock();
 
     runMock.mockReturnValue(3);
     dep.plain.nested.run = runMock as typeof dep.plain.nested.run;

@@ -112,7 +112,10 @@ describe("createMock", () => {
       };
     }
 
-    const mock = createMock(createTestMockFunction, { deep: true });
+    const mock = createMock(createTestMockFunction, {
+      deep: true,
+      funcPropSupport: true,
+    });
     const dep = mock<Dependency>();
 
     dep.nested.service.run.setReturnValue(9);
@@ -167,6 +170,22 @@ describe("createMock", () => {
 
     expect(dep.tool("x")).toBe(3);
     expect(dep.tool.meta.value()).toBe(11);
+  });
+
+  test("deep mode does not deep-mock function properties by default", () => {
+    interface Dependency {
+      tool: ((arg: string) => number) & {
+        meta: {
+          value: () => number;
+        };
+      };
+    }
+
+    const mock = createMock(createTestMockFunction, { deep: true });
+    const dep = mock<Dependency>();
+
+    expect(typeof dep.tool).toBe("function");
+    expect(dep.tool.meta).toBeUndefined();
   });
 
   test("deep mode does not proxy class and built-in instances", () => {

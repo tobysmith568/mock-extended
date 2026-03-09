@@ -30,7 +30,7 @@ export const createMockHandler = <TMockFn extends AnyFunction>({
         return proxied;
       }
 
-      if (ignoredProps.has(prop) || prop === "calls") {
+      if (ignoredProps.has(prop)) {
         return undefined;
       }
 

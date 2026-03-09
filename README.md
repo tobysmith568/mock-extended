@@ -33,7 +33,7 @@ bun install
 Run quality checks:
 
 ```bash
-bun run check
+bun run lint
 bun run typecheck
 ```
 
@@ -52,7 +52,7 @@ bun run build
 Run spec typechecks where defined:
 
 ```bash
-bun run test:typecheck
+bun run typecheck:test
 ```
 
 ### Turbo filters

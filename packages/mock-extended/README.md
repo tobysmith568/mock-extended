@@ -80,7 +80,7 @@ describe("UserService", () => {
 <summary>Bun</summary>
 
 ```ts
-import { describe, expect, it, mock } from "bun:test";
+import { describe, expect, it, mock as bunMock } from "bun:test";
 import { createMock } from "mock-extended";
 
 type User = { id: string };
@@ -88,11 +88,11 @@ interface UserRepo {
   findById: (id: string) => User | null;
 }
 
-const create = createMock(() => mock());
+const mock = createMock(() => bunMock());
 
 describe("UserService", () => {
   it("returns a user by id", () => {
-    const repo = create<UserRepo>();
+    const repo = mock<UserRepo>();
 
     repo.findById.mockReturnValue({ id: "123" });
 
@@ -117,11 +117,11 @@ interface UserRepo {
   findById: (id: string) => User | null;
 }
 
-const create = createMock(() => sinon.stub());
+const mock = createMock(() => sinon.stub());
 
 describe("UserService", () => {
   it("returns a user by id", () => {
-    const repo = create<UserRepo>();
+    const repo = mock<UserRepo>();
 
     repo.findById.returns({ id: "123" });
 
@@ -138,7 +138,7 @@ describe("UserService", () => {
 
 ```ts
 import assert from "node:assert/strict";
-import { describe, it, mock } from "node:test";
+import { describe, it, mock as nodeMock } from "node:test";
 import { createMock } from "mock-extended";
 
 type User = { id: string };
@@ -146,14 +146,14 @@ interface UserRepo {
   findById: (id: string) => User | null;
 }
 
-const createNodeMock = () => mock.fn((..._args: any[]): any => undefined);
-const create = createMock(createNodeMock);
+const createNodeMock = () => nodeMock.fn((..._args: any[]): any => undefined);
+const mock = createMock(createNodeMock);
 
 describe("UserService", () => {
   it("returns a user by id", () => {
-    const repo = create<UserRepo>();
+    const repo = mock<UserRepo>();
 
-    const findByIdMock = mock.fn(() => ({ id: "123" }));
+    const findByIdMock = nodeMock.fn(() => ({ id: "123" }));
     repo.findById = findByIdMock as unknown as typeof repo.findById;
 
     assert.deepEqual(repo.findById("123"), { id: "123" });
@@ -194,12 +194,34 @@ interface Service {
   };
 }
 
-const create = createMock(() => vi.fn(), { deep: true });
-const service = create<Service>();
+const mock = createMock(() => jest.fn(), {
+  deep: true,
+  funcPropSupport: true,
+});
+const service = mock<Service>();
 
 service.nested.client.run.mockReturnValue("ok");
 
 expect(service.nested.client.run("123")).toBe("ok");
+```
+
+The `deep` option in combination with `funcPropSupport` will also mock out some internals set by some mocking libraries (for example the `calls` array on Jest mocks). This can be useful for testing, but it also means you can't access those internals on deep mocked functions.
+To avoid this, you can specify properties to ignore with the `ignoredProps` option.
+
+```ts
+const mock = createMock(() => jest.fn(), {
+  deep: true,
+  funcPropSupport: true,
+  ignoredProps: ["calls"],
+});
+
+const service = mock<Service>();
+
+service.nested.client.run("123");
+
+// Not mocked, so this is the real calls array
+const calls = service.nested.client.run.mock.calls;
+expect(calls).toEqual([["123"]]);
 ```
 
 ## Promises
