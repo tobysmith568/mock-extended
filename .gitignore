@@ -10,6 +10,7 @@ dist/
 build/
 coverage/
 .next/
+**.tgz
 
 # typescript
 *.tsbuildinfo
@@ -21,3 +22,6 @@ coverage/
 
 # misc
 .DS_Store
+
+# Turborepo
+.turbo

@@ -1,0 +1,60 @@
+{
+  "name": "mock-extended",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Mock TypeScript interfaces and classes with ease, supporting any and all mocking libraries.",
+  "keywords": [
+    "mock",
+    "mocking",
+    "stubs",
+    "fakes",
+    "test-doubles",
+    "typescript",
+    "interface",
+    "jest",
+    "vitest",
+    "sinon",
+    "bun"
+  ],
+  "author": {
+    "name": "Toby Smith",
+    "email": "contact@tobythe.dev",
+    "url": "https://tobysmith.uk"
+  },
+  "license": "ISC",
+  "homepage": "https://github.com/tobysmith568/mock-extended#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tobysmith568/mock-extended.git",
+    "directory": "packages/mock-extended"
+  },
+  "bugs": {
+    "url": "https://github.com/tobysmith568/mock-extended/issues"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "files": [
+    "dist",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "lint": "biome check .",
+    "lint:ci": "biome ci .",
+    "typecheck": "tsc --noEmit",
+    "typecheck:test": "tsc --noEmit --project tsconfig.spec.json",
+    "build": "tsdown",
+    "test": "bun test src",
+    "pack": "npm pack"
+  },
+  "devDependencies": {
+    "tsdown": "^0.18.1"
+  }
+}

@@ -1,0 +1,127 @@
+name: Deployment
+run-name: Deployment for v${{ github.event.inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to deploy
+        required: true
+        type: string
+
+defaults:
+  run:
+    shell: pwsh
+
+concurrency:
+  group: Continuous Deployment
+  cancel-in-progress: false
+
+jobs:
+  calculate:
+    name: Calculate Variables
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      npm_tag: ${{ steps.npm_tag.outputs.latest-tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup npm
+        uses: actions/setup-node@v6
+
+      - name: Set Version
+        working-directory: packages/mock-extended
+        run: npm version ${{ inputs.version }} --git-tag-version false
+
+      - name: Calculate npm tag
+        uses: tobysmith568/npm-publish-latest-tag@v1
+        id: npm_tag
+        with:
+          package-json: ./packages/mock-extended/package.json
+
+  integration:
+    name: Run Continuous Integration
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    uses: ./.github/workflows/integration.yml
+    secrets: inherit
+    with:
+      version: ${{ github.event.inputs.version }}
+
+  deploy:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs:
+      - calculate
+      - integration
+    timeout-minutes: 5
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          registry-url: https://registry.npmjs.org
+
+      - name: Download packed artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: mock-extended-build
+          path: artifacts/packs
+
+      - name: Verify packed artifacts
+        run: |
+          $ErrorActionPreference = "Stop"
+          $hasTarball = Get-ChildItem -Path "artifacts/packs" -Filter "*.tgz" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $hasTarball) {
+            throw "No packed tarballs were downloaded."
+          }
+
+      - name: Publish tarballs to npm
+        run: |
+          $ErrorActionPreference = "Stop"
+          $tarballs = Get-ChildItem -Path "artifacts/packs" -Filter "*.tgz" -File | Sort-Object FullName
+          foreach ($tarball in $tarballs) {
+            npm publish $tarball.FullName --access public --provenance --tag ${{ needs.calculate.outputs.npm_tag }}
+          }
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - deploy
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download packed artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: mock-extended-build
+          path: artifacts/packs
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          generate_release_notes: true
+          files: artifacts/packs/*.tgz
+          body: |
+            # Release v${{ github.event.inputs.version }}
+
+            Install from npm:
+            ```bash
+            npm install mock-extended@${{ github.event.inputs.version }}
+            ```
