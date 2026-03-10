@@ -30,12 +30,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup npm
-        uses: actions/setup-node@v6
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Set Version
         working-directory: packages/mock-extended
-        run: npm version ${{ inputs.version }} --git-tag-version false
+        run: bun pm version ${{ inputs.version }} --no-git-tag-version
 
       - name: Calculate npm tag
         uses: tobysmith568/npm-publish-latest-tag@v1

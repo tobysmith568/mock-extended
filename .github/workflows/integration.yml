@@ -88,7 +88,7 @@ jobs:
       - name: Version mock-extended package
         if: ${{ inputs.version }}
         working-directory: packages/mock-extended
-        run: npm version ${{ inputs.version }} --no-git-tag-version
+        run: bun pm version ${{ inputs.version }} --no-git-tag-version
 
       - name: Pack mock-extended package
         working-directory: packages/mock-extended
