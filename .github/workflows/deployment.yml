@@ -17,6 +17,10 @@ concurrency:
   group: Continuous Deployment
   cancel-in-progress: false
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   calculate:
     name: Calculate Variables
