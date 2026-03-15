@@ -1,7 +1,10 @@
 :root {
   --font-sans: "Outfit", "Avenir Next", "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "Consolas", monospace;
-  --bg-home: radial-gradient(circle at 15% 15%, #f9d87f 0%, #f9d87f00 25%), radial-gradient(circle at 80% 10%, #8ad3c0 0%, #8ad3c000 30%), linear-gradient(130deg, #fffef8 0%, #f6fbff 55%, #fdf6ee 100%);
+  --bg-home:
+    radial-gradient(circle at 15% 15%, #f9d87f 0%, #f9d87f00 25%),
+    radial-gradient(circle at 80% 10%, #8ad3c0 0%, #8ad3c000 30%),
+    linear-gradient(130deg, #fffef8 0%, #f6fbff 55%, #fdf6ee 100%);
   --bg-docs: linear-gradient(180deg, #fcfefb 0%, #f8fbf5 100%);
   --ink: #1d2b27;
   --ink-soft: #3f5852;
