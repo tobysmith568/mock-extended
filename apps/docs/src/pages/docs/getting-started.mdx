@@ -1,0 +1,27 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: Getting Started
+description: Install and create your first typed mock.
+---
+
+# Getting Started
+
+Install the package:
+
+```bash
+bun add -d mock-extended
+```
+
+Create a mock with your framework's mock function:
+
+```ts
+import { createMock } from "mock-extended";
+
+interface UserService {
+  getName(id: string): Promise<string>;
+}
+
+const userService = createMock<UserService>();
+```
+
+Then configure behavior with your chosen runner utilities (`jest.fn`, `vi.fn`, etc.) based on your project setup.

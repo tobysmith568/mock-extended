@@ -1,0 +1,28 @@
+---
+import Sidebar from "../components/Sidebar.astro";
+import BaseLayout from "./BaseLayout.astro";
+
+const { title, description = "mock-extended documentation" } = Astro.props;
+---
+
+<BaseLayout
+  title={`${title} | mock-extended docs`}
+  description={description}
+  bodyClass="docs-body"
+>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">mock-extended</a>
+      <nav aria-label="Primary navigation">
+        <a href="/docs">Docs</a>
+        <a href="https://github.com/tobysmith568/mock-extended">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container docs-shell">
+    <Sidebar currentPath={Astro.url.pathname} />
+    <article class="docs-content">
+      <slot />
+    </article>
+  </main>
+</BaseLayout>

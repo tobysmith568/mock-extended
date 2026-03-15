@@ -1,0 +1,23 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: Why mock-extended
+description: Why this package exists and what it helps you avoid.
+---
+
+# Why mock-extended
+
+`mock-extended` is built for teams that want strong typing without coupling tests to a single mocking framework.
+
+## The problem
+
+When test helpers are tightly bound to one framework, migrations become costly and cross-project consistency breaks down.
+
+## The approach
+
+- Keep runtime behavior tiny and predictable.
+- Let your chosen test framework own the mock function implementation.
+- Preserve TypeScript ergonomics for nested structures and method signatures.
+
+## The result
+
+You keep implementation flexibility while maintaining reliable, compiler-backed test confidence.

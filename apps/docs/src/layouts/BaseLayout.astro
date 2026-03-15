@@ -1,0 +1,30 @@
+---
+import "../styles/global.css";
+
+type Props = {
+  title: string;
+  description?: string;
+  bodyClass?: string;
+  lang?: string;
+};
+
+const {
+  title,
+  description = "mock-extended documentation",
+  bodyClass,
+  lang = "en",
+} = Astro.props as Props;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body class={bodyClass}>
+    <slot />
+  </body>
+</html>

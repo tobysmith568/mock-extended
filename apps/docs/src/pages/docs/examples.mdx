@@ -1,0 +1,40 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: Examples
+description: Practical snippets for common test stacks.
+---
+
+# Examples
+
+## Vitest
+
+```ts
+import { describe, expect, it, vi } from "vitest";
+import { createMock } from "mock-extended";
+
+interface ApiClient {
+  get(path: string): Promise<{ ok: boolean }>;
+}
+
+describe("ApiClient consumer", () => {
+  it("handles success", async () => {
+    const client = createMock<ApiClient>({
+      fn: vi.fn,
+    });
+
+    client.get.mockResolvedValue({ ok: true });
+    await expect(client.get("/health")).resolves.toEqual({ ok: true });
+  });
+});
+```
+
+## Jest
+
+```ts
+import { createMock } from "mock-extended";
+
+type Repo = { find(id: string): Promise<string | null> };
+
+const repo = createMock<Repo>({ fn: jest.fn });
+repo.find.mockResolvedValue("user-1");
+```

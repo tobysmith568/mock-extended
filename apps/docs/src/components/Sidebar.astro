@@ -1,0 +1,19 @@
+---
+import { docsNavItems, isActiveLink } from "../lib/docs-nav";
+
+const { currentPath } = Astro.props;
+---
+
+<aside class="sidebar" aria-label="Docs navigation">
+  <p class="sidebar-label">Documentation</p>
+  <ul>
+    <li>
+      <a href="/docs" class={isActiveLink(currentPath, "/docs") ? "active" : undefined}>Overview</a>
+    </li>
+    {docsNavItems.map((item) => (
+      <li>
+        <a href={item.href} class={isActiveLink(currentPath, item.href) ? "active" : undefined}>{item.title}</a>
+      </li>
+    ))}
+  </ul>
+</aside>
