@@ -7,9 +7,6 @@ const { currentPath } = Astro.props;
 <aside class="sidebar" aria-label="Docs navigation">
   <p class="sidebar-label">Documentation</p>
   <ul>
-    <li>
-      <a href="/docs" class={isActiveLink(currentPath, "/docs") ? "active" : undefined}>Overview</a>
-    </li>
     {docsNavItems.map((item) => (
       <li>
         <a href={item.href} class={isActiveLink(currentPath, item.href) ? "active" : undefined}>{item.title}</a>
@@ -17,3 +14,50 @@ const { currentPath } = Astro.props;
     ))}
   </ul>
 </aside>
+
+<style>
+  .sidebar {
+    position: sticky;
+    top: 5rem;
+    align-self: start;
+    border: 1px solid var(--line);
+    background: #ffffff;
+    border-radius: var(--radius);
+    padding: 1rem;
+  }
+
+  .sidebar-label {
+    margin: 0 0 0.7rem;
+    font-size: 0.84rem;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .sidebar a {
+    display: block;
+    color: var(--ink-soft);
+    border-radius: 9px;
+    padding: 0.42rem 0.55rem;
+  }
+
+  .sidebar a.active {
+    color: var(--ink);
+    background: var(--brand-soft);
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar {
+      position: static;
+    }
+  }
+</style>

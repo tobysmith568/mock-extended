@@ -1,0 +1,38 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--ink);
+}
+
+body.home-body {
+  background: var(--bg-home);
+  min-height: 100vh;
+}
+
+body.docs-body {
+  background: var(--bg-docs);
+}
+
+a {
+  color: var(--brand);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+}
+
+.heading-anchor {
+  color: #95a39f;
+}

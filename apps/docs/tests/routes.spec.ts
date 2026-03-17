@@ -9,9 +9,7 @@ test.describe("home route", () => {
         name: "Type-safe mocks without the framework lock-in.",
       }),
     ).toBeVisible();
-    await expect(
-      page.getByText("Framework-agnostic mock functions"),
-    ).toBeVisible();
+    await expect(page.getByText("Zero runtime dependencies")).toBeVisible();
   });
 
   test("cta route is reachable", async ({ page }) => {

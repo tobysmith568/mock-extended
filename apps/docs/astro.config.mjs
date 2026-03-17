@@ -10,6 +10,9 @@ export default defineConfig({
   output: "static",
   integrations: [mdx(), preact()],
   markdown: {
+    shikiConfig: {
+      theme: "github-light",
+    },
     remarkPlugins: [remarkGfm, remarkSmartypants],
     rehypePlugins: [
       rehypeSlug,

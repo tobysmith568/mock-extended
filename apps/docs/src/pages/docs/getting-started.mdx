@@ -1,27 +1,142 @@
 ---
 layout: ../../layouts/DocsLayout.astro
 title: Getting Started
-description: Install and create your first typed mock.
+description: Install mock-extended, create a typed builder, and understand the core workflow.
 ---
 
 # Getting Started
 
-Install the package:
+`mock-extended` has a deliberately small API.
+
+You call `createMock(factory, options?)` once for your test stack, then use the
+returned builder to create typed mocks for interfaces or classes throughout your
+tests.
+
+## Install the package
 
 ```bash
-bun add -d mock-extended
+npm install --save-dev mock-extended
 ```
 
-Create a mock with your framework's mock function:
+## 0. Define the service you want to mock
+
+Most tests start with a dependency contract.
+
+```ts
+type User = { id: string };
+
+interface UserRepo {
+  findById(id: string): User | null;
+}
+```
+
+`mock-extended` works best when you start from the real shape you want the test
+double to satisfy.
+
+## 1. Create a mock builder
+
+Pass in the mock function factory from your runner or mocking library. Here we're using Jest's `jest.fn`, but you can swap in anything.
 
 ```ts
 import { createMock } from "mock-extended";
 
-interface UserService {
-  getName(id: string): Promise<string>;
-}
-
-const userService = createMock<UserService>();
+const mock = createMock(() => jest.fn());
 ```
 
-Then configure behavior with your chosen runner utilities (`jest.fn`, `vi.fn`, etc.) based on your project setup.
+That gives you a reusable builder for the rest of the test file or suite.
+
+## 2. Create a typed mock instance
+
+Use the builder with the service shape from step 0:
+
+```ts
+const repo = mock<UserRepo>();
+```
+
+Every function property you access is created lazily and typed from your
+factory:
+
+```ts
+repo.findById.mockReturnValue({ id: "123" });
+
+expect(repo.findById("123")).toEqual({ id: "123" });
+expect(repo.findById).toHaveBeenCalledWith("123");
+```
+
+## 3. Seed known values with a partial
+
+You can pass a partial object when creating a mock. This is useful when part of
+the dependency is fixed data and the rest should stay lazily mocked.
+
+```ts
+interface ConfigRepo {
+  enabled: boolean;
+  prefix: string | undefined;
+  load(): string;
+}
+
+const repo = mock<ConfigRepo>({
+  enabled: false,
+  prefix: undefined,
+});
+
+repo.load.mockReturnValue("ready");
+```
+
+Falsy values, `null`, and `undefined` are preserved instead of being replaced by
+mock behavior.
+
+## 4. Swap runners by swapping the factory
+
+The builder API stays the same across runners. Only the factory changes:
+
+```ts
+const jestMock = createMock(() => jest.fn());
+const vitestMock = createMock(() => vi.fn());
+const bunMockBuilder = createMock(() => bunMock());
+const sinonMock = createMock(() => sinon.stub());
+const nodeTestMock = createMock(() => nodeMock.fn((..._args: any[]) => undefined));
+```
+
+This makes `mock-extended` useful when:
+
+- a team maintains multiple repositories with different test stacks,
+- a package needs examples for more than one runner,
+- you want typed mocks without adopting a runner-specific helper library.
+
+## 5. Turn on deep mocking when the shape is nested
+
+Deep mode recursively proxies nested plain objects so you can configure deep
+methods without building every branch yourself.
+
+```ts
+interface Service {
+  nested: {
+    client: {
+      run(id: string): string;
+    };
+  };
+}
+
+const deepMock = createMock(() => jest.fn(), { deep: true });
+const service = deepMock<Service>();
+
+service.nested.client.run.mockReturnValue("ok");
+```
+
+If you also need callable function properties to expose nested mocked members,
+add `funcPropSupport: true`. That behavior is covered in more detail on the
+Features and Examples pages.
+
+## Exported types
+
+The package also exports a small set of utility types for advanced use cases:
+
+- `MockFactory`
+- `MethodMock`
+- `MockProxy`
+- `DeepMockProxy`
+- `DeepMockProxyWithFuncPropSupport`
+- `CreateMockOptions`
+
+Most users can ignore these at first and rely on inference from `createMock`.

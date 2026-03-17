@@ -1,23 +1,130 @@
 ---
 layout: ../../layouts/DocsLayout.astro
 title: Features
-description: Explore key capabilities in mock-extended.
+description: Explore how mock-extended handles lazy mocks, deep recursion, partials, and ignored properties.
 ---
 
 # Features
 
-## Framework agnostic
+## One API across runners
 
-Use it with Jest, Vitest, Bun, Node test runner, or other ecosystems.
+`mock-extended` does not ship its own opinionated mock implementation.
 
-## Lazy mock creation
+Instead, you provide a factory that returns the mock function type you already
+use in your tests. That keeps the package compatible with Jest, Vitest, Bun,
+Sinon, `node:test`, and custom mock factories that expose callable functions.
 
-Accessing a property creates only what you need, reducing manual setup.
+## Lazy method creation
 
-## Deep mocking support
+Method mocks are created the first time a property is accessed.
 
-Model nested structures while keeping strong TypeScript inference.
+That matters for larger interfaces because you do not need to define dozens of
+stub functions up front just to use one or two methods in a test.
 
-## Strict behavior options
+Repeated access returns the same mock instance, so configuration and assertions
+stay stable:
 
-Use strict variants to fail fast when tests access unconfigured behavior.
+```ts
+const mock = createMock(createTestMockFunction);
+const repo = mock<{ findById(id: string): string }>();
+
+repo.findById === repo.findById; // true
+```
+
+## Strong typing for methods
+
+Function properties are exposed as an intersection of the original method type
+and your mock function type. In practice, that means you keep the original call
+signature and the runner-specific mock API on the same value.
+
+For example, a Jest-backed method can still be called like the original method
+and configured with `.mockReturnValue(...)`.
+
+## Partial input support
+
+The builder accepts an optional partial object:
+
+```ts
+const userRepo = mock<UserRepo>({
+  connected: false,
+  cacheKey: undefined,
+});
+```
+
+This is useful for mixed dependencies where some fields are fixed values and
+other fields should remain lazily mocked. Falsy values, `null`, and `undefined`
+are preserved.
+
+## Deep mocking for nested plain objects
+
+Enable `deep: true` when your dependency graph contains nested object shapes and
+you want missing branches to be proxied automatically.
+
+```ts
+const mock = createMock(() => jest.fn(), { deep: true });
+```
+
+In deep mode:
+
+- nested plain objects are recursively proxied,
+- explicitly provided nested partial values are preserved,
+- built-in instances and class instances are left alone.
+
+That last point is intentional. Objects such as `Date`, `Map`, or your own class
+instances are not rewritten into deep mocks.
+
+## Function property support for deep mode
+
+Callable values with attached properties are common in some APIs. By default,
+deep mode treats a function property as just a function. If you need nested
+members on that function to be deep mocked as well, opt into
+`funcPropSupport: true`.
+
+```ts
+const mock = createMock(() => jest.fn(), {
+  deep: true,
+  funcPropSupport: true,
+});
+```
+
+Use this when your dependency has shapes like:
+
+```ts
+type Tool = ((id: string) => number) & {
+  meta: {
+    value(): number;
+  };
+};
+```
+
+## Ignored properties and promise safety
+
+`ignoredProps` lets you exclude specific property names from lazy mocking.
+
+By default, `then` is ignored so a mock cannot accidentally become thenable and
+interfere with Promise behavior.
+
+```ts
+const mock = createMock(() => jest.fn(), {
+  ignoredProps: [],
+});
+```
+
+You can also use `ignoredProps` with deep function-property support to avoid
+mocking framework internals such as `calls` when you want to keep the real value
+provided by the underlying runner.
+
+## API options
+
+`createMock(factory, options?)` accepts these options:
+
+| Option            | Type                | Default    | Description                                                |
+| ----------------- | ------------------- | ---------- | ---------------------------------------------------------- |
+| `ignoredProps`    | `readonly string[]` | `['then']` | Properties that should not be mocked lazily.               |
+| `deep`            | `boolean`           | `false`    | Enables deep recursive mocking for nested plain objects.   |
+| `funcPropSupport` | `boolean`           | `false`    | With `deep`, allows deep mocked members on function props. |
+
+The combination of `deep: true` and `funcPropSupport: true` is the most powerful
+mode, but it is also the easiest one to overuse. Start with shallow mocks, add
+deep mode for nested object graphs, and only enable function-property support
+when your dependency shape actually needs it.
