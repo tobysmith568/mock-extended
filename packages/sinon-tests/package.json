@@ -12,7 +12,7 @@
     "mock-extended": "workspace:*"
   },
   "devDependencies": {
-    "@types/sinon": "^17.0.4",
-    "sinon": "^19.0.2"
+    "@types/sinon": "^21.0.0",
+    "sinon": "^21.0.0"
   }
 }
