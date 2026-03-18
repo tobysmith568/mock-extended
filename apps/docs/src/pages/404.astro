@@ -1,0 +1,116 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Page not found | mock-extended docs"
+  description="The page you requested could not be found."
+  bodyClass="home-body"
+>
+  <main class="not-found-main">
+    <section class="not-found-card" aria-labelledby="not-found-title">
+      <p class="not-found-kicker">404</p>
+      <h1 id="not-found-title" class="not-found-title">Page not found</h1>
+      <p class="not-found-summary">
+        That page has moved, never existed, or was typed incorrectly. Use the links
+        below to jump back into the docs.
+      </p>
+      <div class="not-found-actions">
+        <a class="button button-primary" href="/">Back to home</a>
+        <a class="button button-secondary" href="/docs/getting-started">
+          Open docs
+        </a>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found-main {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+  }
+
+  .not-found-card {
+    width: min(100%, 44rem);
+    background: var(--surface-glass);
+    border: 1px solid var(--surface-glass-line);
+    border-radius: 28px;
+    padding: clamp(1.6rem, 4vw, 3rem);
+    box-shadow: var(--shadow);
+    animation: rise-in 500ms ease-out;
+  }
+
+  .not-found-kicker {
+    margin: 0;
+    font-size: 0.88rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brand);
+    font-weight: 700;
+  }
+
+  .not-found-title {
+    margin: 0.7rem 0 0.9rem;
+    font-size: clamp(2rem, 5.2vw, 3.2rem);
+    line-height: 1.08;
+  }
+
+  .not-found-summary {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--ink-soft);
+    font-size: 1.02rem;
+    line-height: 1.7;
+  }
+
+  .not-found-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.72rem 1.05rem;
+    border-radius: 999px;
+    font-weight: 600;
+    transition:
+      transform 140ms ease,
+      box-shadow 140ms ease;
+  }
+
+  .button:hover {
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  .button-primary {
+    background: var(--brand);
+    color: #ffffff;
+    box-shadow: 0 8px 24px rgba(17, 94, 84, 0.25);
+  }
+
+  .button-secondary {
+    background: var(--surface-soft);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
