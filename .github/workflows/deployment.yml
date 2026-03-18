@@ -80,7 +80,7 @@ jobs:
           node-version: 24
 
       - name: Download packed artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: mock-extended-build
           path: artifacts/packs
@@ -112,7 +112,7 @@ jobs:
 
     steps:
       - name: Download packed artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: mock-extended-build
           path: artifacts/packs
