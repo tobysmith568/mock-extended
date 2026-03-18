@@ -120,4 +120,47 @@ describe("mock-extended with node:test mock.fn", () => {
     assert.equal(dep.plain.nested.run(), 3);
     assert.equal(runMock.mock.calls.length, 1);
   });
+
+  describe("partial values", () => {
+    type PartialDependency = {
+      enabled: boolean;
+      count: number;
+      note: string | undefined;
+      nested: {
+        service: {
+          run: () => string;
+        };
+      };
+    };
+
+    it("preserves explicit partial values", () => {
+      const mock = createMock(createMockFn, { deep: true });
+      const dep = mock<PartialDependency>({
+        enabled: false,
+        count: 0,
+        note: undefined,
+        nested: { service: {} },
+      } as Partial<PartialDependency>);
+
+      assert.equal(dep.enabled, false);
+      assert.equal(dep.count, 0);
+      assert.equal(dep.note, undefined);
+    });
+
+    it("lazy-mocks missing deep methods from partial input", () => {
+      const mock = createMock(createMockFn, { deep: true });
+      const dep = mock<PartialDependency>({
+        enabled: false,
+        count: 0,
+        note: undefined,
+        nested: { service: {} },
+      } as Partial<PartialDependency>);
+      const runMock = nodeMock.fn(() => "ok");
+
+      dep.nested.service.run =
+        runMock as unknown as typeof dep.nested.service.run;
+
+      assert.equal(dep.nested.service.run(), "ok");
+    });
+  });
 });

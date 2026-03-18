@@ -37,6 +37,47 @@ describe("createMockHandler", () => {
     expect(proxy.then).toBeUndefined();
   });
 
+  test("keeps explicitly assigned undefined instead of creating a lazy mock", () => {
+    let calls = 0;
+    const handler = createMockHandler({
+      ignoredProps: new Set(),
+      factory: () => {
+        calls += 1;
+        return () => undefined;
+      },
+      deep: false,
+      proxifyValue: (value) => value,
+    });
+
+    const proxy = new Proxy(
+      {
+        maybe: undefined,
+      },
+      handler,
+    ) as { maybe: unknown };
+
+    expect(proxy.maybe).toBeUndefined();
+    expect(calls).toBe(0);
+  });
+
+  test("returns explicit value for ignored prop when present on target", () => {
+    const handler = createMockHandler({
+      ignoredProps: new Set(["ignoredProp"]),
+      factory: () => () => undefined,
+      deep: false,
+      proxifyValue: (value) => value,
+    });
+
+    const proxy = new Proxy(
+      {
+        ignoredProp: "value",
+      },
+      handler,
+    ) as { ignoredProp: unknown };
+
+    expect(proxy.ignoredProp).toBe("value");
+  });
+
   test("proxifies existing and assigned values", () => {
     const marker = Symbol("proxied");
     const proxifyValue = (value: unknown) => {

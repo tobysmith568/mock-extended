@@ -116,4 +116,46 @@ describe("mock-extended with Bun", () => {
     expect(dep.plain).not.toBe(plain);
     expect(dep.plain.nested.run()).toBe(3);
   });
+
+  describe("partial values", () => {
+    type PartialDependency = {
+      enabled: boolean;
+      count: number;
+      note: string | undefined;
+      nested: {
+        service: {
+          run: () => string;
+        };
+      };
+    };
+
+    test("preserves explicit partial values", () => {
+      const mock = createMock(() => bunMock(), { deep: true });
+      const dep = mock<PartialDependency>({
+        enabled: false,
+        count: 0,
+        note: undefined,
+        nested: { service: {} },
+      } as Partial<PartialDependency>);
+
+      expect(dep.enabled).toBe(false);
+      expect(dep.count).toBe(0);
+      expect(dep.note).toBeUndefined();
+    });
+
+    test("lazy-mocks missing deep methods from partial input", () => {
+      const mock = createMock(() => bunMock(), { deep: true });
+      const dep = mock<PartialDependency>({
+        enabled: false,
+        count: 0,
+        note: undefined,
+        nested: { service: {} },
+      } as Partial<PartialDependency>);
+      const runMock = bunMock().mockReturnValue("ok");
+
+      dep.nested.service.run = runMock as typeof dep.nested.service.run;
+
+      expect(dep.nested.service.run()).toBe("ok");
+    });
+  });
 });

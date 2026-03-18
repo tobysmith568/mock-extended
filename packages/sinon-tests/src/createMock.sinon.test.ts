@@ -22,7 +22,7 @@ describe("mock-extended with Sinon", () => {
     expect(factory.callCount).toBe(1);
   });
 
-  test("supports sinon stub returns and calledWithExactly", () => {
+  test("supports sinon stub returns", () => {
     const factory = sinon.spy(() => sinon.stub());
     const mock = createMock(factory);
     const dep = mock<Dependency>();
@@ -31,6 +31,15 @@ describe("mock-extended with Sinon", () => {
 
     expect(dep.doWork("abc")).toBe(42);
     expect(dep.doWork.calledOnce).toBe(true);
+  });
+
+  test("supports sinon calledWithExactly", () => {
+    const factory = sinon.spy(() => sinon.stub());
+    const mock = createMock(factory);
+    const dep = mock<Dependency>();
+
+    dep.doWork("abc");
+
     expect(dep.doWork.calledWithExactly("abc")).toBe(true);
   });
 
@@ -121,5 +130,47 @@ describe("mock-extended with Sinon", () => {
     expect((dep.counter as unknown as Counter).current()).toBe(7);
     expect(dep.plain).not.toBe(plain);
     expect(dep.plain.nested.run()).toBe(3);
+  });
+
+  describe("partial values", () => {
+    type PartialDependency = {
+      enabled: boolean;
+      count: number;
+      note: string | undefined;
+      nested: {
+        service: {
+          run: () => string;
+        };
+      };
+    };
+
+    test("preserves explicit partial values", () => {
+      const mock = createMock(() => sinon.stub(), { deep: true });
+      const dep = mock<PartialDependency>({
+        enabled: false,
+        count: 0,
+        note: undefined,
+        nested: { service: {} },
+      } as Partial<PartialDependency>);
+
+      expect(dep.enabled).toBe(false);
+      expect(dep.count).toBe(0);
+      expect(dep.note).toBeUndefined();
+    });
+
+    test("lazy-mocks missing deep methods from partial input", () => {
+      const mock = createMock(() => sinon.stub(), { deep: true });
+      const dep = mock<PartialDependency>({
+        enabled: false,
+        count: 0,
+        note: undefined,
+        nested: { service: {} },
+      } as Partial<PartialDependency>);
+      const runStub = sinon.stub().returns("ok");
+
+      dep.nested.service.run = runStub as typeof dep.nested.service.run;
+
+      expect(dep.nested.service.run()).toBe("ok");
+    });
   });
 });
