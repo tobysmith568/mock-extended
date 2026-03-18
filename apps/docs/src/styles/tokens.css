@@ -1,7 +1,10 @@
 :root {
   --font-sans: "Outfit", "Avenir Next", "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "Consolas", monospace;
-  --bg-home: radial-gradient(circle at 15% 15%, #f9d87f 0%, #f9d87f00 25%), radial-gradient(circle at 80% 10%, #8ad3c0 0%, #8ad3c000 30%), linear-gradient(130deg, #fffef8 0%, #f6fbff 55%, #fdf6ee 100%);
+  --bg-home:
+    radial-gradient(circle at 15% 15%, #f9d87f 0%, #f9d87f00 25%),
+    radial-gradient(circle at 80% 10%, #8ad3c0 0%, #8ad3c000 30%),
+    linear-gradient(130deg, #fffef8 0%, #f6fbff 55%, #fdf6ee 100%);
   --bg-docs: linear-gradient(180deg, #fcfefb 0%, #f8fbf5 100%);
   --ink: #1d2b27;
   --ink-soft: #3f5852;
@@ -26,7 +29,10 @@
 }
 
 :root[data-theme="dark"] {
-  --bg-home: radial-gradient(circle at 15% 15%, #3464554a 0%, #34645500 30%), radial-gradient(circle at 80% 10%, #c99f3e38 0%, #c99f3e00 32%), linear-gradient(140deg, #0f1715 0%, #111d1a 52%, #1a2018 100%);
+  --bg-home:
+    radial-gradient(circle at 15% 15%, #3464554a 0%, #34645500 30%),
+    radial-gradient(circle at 80% 10%, #c99f3e38 0%, #c99f3e00 32%),
+    linear-gradient(140deg, #0f1715 0%, #111d1a 52%, #1a2018 100%);
   --bg-docs: linear-gradient(180deg, #111a17 0%, #0e1513 100%);
   --ink: #e5efeb;
   --ink-soft: #b6cbc4;

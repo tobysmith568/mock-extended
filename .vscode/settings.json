@@ -20,6 +20,9 @@
   "[json]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
+  "[css]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
   "typescript.format.enable": false,
   "javascript.format.enable": false,
   "biome.requireConfiguration": true
