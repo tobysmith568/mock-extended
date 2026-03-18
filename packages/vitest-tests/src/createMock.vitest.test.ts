@@ -123,4 +123,45 @@ describe("mock-extended with Vitest", () => {
     expect(dep.plain).not.toBe(plain);
     expect(dep.plain.nested.run()).toBe(3);
   });
+
+  describe("partial values", () => {
+    type PartialDependency = {
+      enabled: boolean;
+      count: number;
+      note: string | undefined;
+      nested: {
+        service: {
+          run: () => string;
+        };
+      };
+    };
+
+    test("preserves explicit partial values", () => {
+      const mock = createMock(() => vi.fn(), { deep: true });
+      const dep = mock<PartialDependency>({
+        enabled: false,
+        count: 0,
+        note: undefined,
+        nested: { service: {} },
+      } as Partial<PartialDependency>);
+
+      expect(dep.enabled).toBe(false);
+      expect(dep.count).toBe(0);
+      expect(dep.note).toBeUndefined();
+    });
+
+    test("lazy-mocks missing deep methods from partial input", () => {
+      const mock = createMock(() => vi.fn(), { deep: true });
+      const dep = mock<PartialDependency>({
+        enabled: false,
+        count: 0,
+        note: undefined,
+        nested: { service: {} },
+      } as Partial<PartialDependency>);
+
+      dep.nested.service.run.mockReturnValue("ok");
+
+      expect(dep.nested.service.run()).toBe("ok");
+    });
+  });
 });

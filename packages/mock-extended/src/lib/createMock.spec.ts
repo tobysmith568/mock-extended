@@ -58,6 +58,36 @@ describe("createMock", () => {
     expect(dep.value).toBeUndefined();
   });
 
+  test("keeps additional falsy partial values like 0, empty string, and NaN", () => {
+    interface Dependency {
+      attempts: number;
+      label: string;
+      score: number;
+      doWork: () => number;
+    }
+
+    const mock = createMock(createTestMockFunction);
+    const dep = mock<Dependency>({
+      attempts: 0,
+      label: "",
+      score: Number.NaN,
+    });
+
+    expect(dep.attempts).toBe(0);
+    expect(dep.label).toBe("");
+    expect(dep.score).toBeNaN();
+  });
+
+  test("preserves symbol-keyed partial values", () => {
+    const flag = Symbol("flag");
+    const mock = createMock(createTestMockFunction);
+    const dep = mock<{ [flag]: number; doWork: () => number }>({
+      [flag]: 42,
+    } as { [flag]: number; doWork: () => number });
+
+    expect(dep[flag]).toBe(42);
+  });
+
   test("supports assigning non-function properties", () => {
     const mock = createMock(createTestMockFunction);
     const dep = mock<{ count: number }>();
@@ -150,6 +180,55 @@ describe("createMock", () => {
     expect(dep.nested.service.run()).toBe("ok");
   });
 
+  test("deep partials support nested values beyond two levels", () => {
+    interface Dependency {
+      nested: {
+        level2: {
+          enabled: boolean;
+          level3: {
+            run: () => string;
+          };
+        };
+      };
+    }
+
+    const mock = createMock(createTestMockFunction, { deep: true });
+    const dep = mock<Dependency>({
+      nested: {
+        level2: {
+          enabled: false,
+          level3: {},
+        },
+      } as Dependency["nested"],
+    });
+
+    dep.nested.level2.level3.run.setReturnValue("deep-ok");
+
+    expect(dep.nested.level2.enabled).toBe(false);
+    expect(dep.nested.level2.level3.run()).toBe("deep-ok");
+  });
+
+  test("deep partials keep arrays as plain values", () => {
+    interface Dependency {
+      values: number[];
+      nested: {
+        run: () => number;
+      };
+    }
+
+    const values = [1, 2, 3];
+    const mock = createMock(createTestMockFunction, { deep: true });
+    const dep = mock<Dependency>({
+      values,
+      nested: {},
+    } as Dependency);
+
+    dep.nested.run.setReturnValue(8);
+
+    expect(dep.values).toBe(values);
+    expect(dep.nested.run()).toBe(8);
+  });
+
   test("deep mode supports callable function properties with nested members", () => {
     interface Dependency {
       tool: ((arg: string) => number) & {
@@ -170,6 +249,35 @@ describe("createMock", () => {
 
     expect(dep.tool("x")).toBe(3);
     expect(dep.tool.meta.value()).toBe(11);
+  });
+
+  test("deep mode with funcPropSupport preserves partial function members", () => {
+    interface Dependency {
+      tool: ((arg: string) => number) & {
+        meta: {
+          enabled: boolean;
+          value: () => number;
+        };
+      };
+    }
+
+    const tool = createTestMockFunction() as unknown as Dependency["tool"];
+    tool.meta = {
+      enabled: false,
+    } as Dependency["tool"]["meta"];
+
+    const mock = createMock(createTestMockFunction, {
+      deep: true,
+      funcPropSupport: true,
+    });
+    const dep = mock<Dependency>({ tool });
+
+    dep.tool.setReturnValue(5);
+    dep.tool.meta.value.setReturnValue(10);
+
+    expect(dep.tool.meta.enabled).toBe(false);
+    expect(dep.tool("x")).toBe(5);
+    expect(dep.tool.meta.value()).toBe(10);
   });
 
   test("deep mode does not deep-mock function properties by default", () => {
