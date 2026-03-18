@@ -1,4 +1,5 @@
 import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
@@ -11,7 +12,8 @@ export default defineConfig({
   build: {
     format: "file",
   },
-  integrations: [mdx()],
+  publicDir: "src/public",
+  integrations: [mdx(), sitemap()],
   markdown: {
     shikiConfig: {
       themes: {

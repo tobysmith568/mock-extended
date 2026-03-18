@@ -102,6 +102,14 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+      - name: Upload docs website artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: docs-website-build
+          path: apps/docs/dist
+          retention-days: 1
+          if-no-files-found: error
+
   test:
     name: Test
     runs-on: ubuntu-latest
