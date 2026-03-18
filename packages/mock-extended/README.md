@@ -9,6 +9,7 @@ Framework-agnostic TypeScript mocks for interfaces and classes.
 - No hard dependency on Jest/Vitest/Bun/etc.
 - Lazy mock creation per accessed method.
 - Fully typed method mocks from your factory function.
+- Optional partial input for fixed values plus lazy mocks.
 - Optional deep recursive mocking for nested objects.
 
 Inspired by:
@@ -180,6 +181,31 @@ Creates a typed mock builder.
 | `ignoredProps`    | `readonly string[]` | `['then']` | Property names that should not be mocked lazily.                       |
 | `deep`            | `boolean`           | `false`    | Enables deep recursive mocking for nested plain objects.               |
 | `funcPropSupport` | `boolean`           | `false`    | With `deep`, allows function properties to expose deep mocked members. |
+
+## Partial input
+
+You can pass a partial object to seed known values while leaving missing
+methods lazily mocked.
+
+```ts
+interface ConfigRepo {
+  enabled: boolean;
+  tag?: string;
+  load: () => string;
+}
+
+const mock = createMock(() => jest.fn());
+const repo = mock<ConfigRepo>({
+  enabled: false,
+  tag: undefined,
+});
+
+repo.load.mockReturnValue("ok");
+
+expect(repo.enabled).toBe(false);
+expect(repo.tag).toBeUndefined();
+expect(repo.load()).toBe("ok");
+```
 
 ## Deep mocks
 
