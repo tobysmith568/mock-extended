@@ -14,7 +14,7 @@ test.describe("home route", () => {
 
   test("cta route is reachable", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "Start in 2 minutes" }).click();
+    await page.getByRole("link", { name: "Get started" }).click();
 
     await expect(page).toHaveURL(/\/docs\/getting-started$/);
     await expect(
@@ -24,13 +24,14 @@ test.describe("home route", () => {
 });
 
 test.describe("docs shell", () => {
-  test("docs overview loads with shared navigation", async ({ page }) => {
+  test("docs root redirects with shared navigation", async ({ page }) => {
     await page.goto("/docs");
 
     const docsSidebar = page.getByLabel("Docs navigation");
 
+    await expect(page).toHaveURL(/\/docs\/getting-started$/);
     await expect(
-      page.getByRole("heading", { name: "Documentation" }),
+      page.getByRole("heading", { name: "Getting Started" }),
     ).toBeVisible();
     await expect(
       page.getByRole("navigation", { name: "Primary navigation" }),
