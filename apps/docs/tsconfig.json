@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "preact",
     "types": ["astro/client", "@playwright/test"]
   },
   "include": ["src", "tests", "astro.config.mjs", "playwright.config.ts"]
