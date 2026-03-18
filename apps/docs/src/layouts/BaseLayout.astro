@@ -1,0 +1,68 @@
+---
+import "../styles/tokens.css";
+import "../styles/base.css";
+
+type Props = {
+  title: string;
+  description?: string;
+  bodyClass?: string;
+  lang?: string;
+};
+
+const {
+  title,
+  description = "mock-extended documentation",
+  bodyClass,
+  lang = "en",
+} = Astro.props as Props;
+---
+
+<!doctype html>
+<html lang={lang} data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const storageKey = "mock-extended-theme";
+        const root = document.documentElement;
+
+        const getSystemTheme = () =>
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+
+        const readStoredTheme = () => {
+          try {
+            const saved = localStorage.getItem(storageKey);
+            return saved === "dark" || saved === "light" ? saved : null;
+          } catch {
+            return null;
+          }
+        };
+
+        const applyTheme = (theme) => {
+          root.dataset.theme = theme;
+          root.style.colorScheme = theme;
+        };
+
+        const stored = readStoredTheme();
+        applyTheme(stored ?? getSystemTheme());
+
+        if (!stored) {
+          const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+          mediaQuery.addEventListener("change", () => {
+            if (!readStoredTheme()) {
+              applyTheme(getSystemTheme());
+            }
+          });
+        }
+      })();
+    </script>
+  </head>
+  <body class={bodyClass}>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,19 @@
+---
+import HomeSplash from "../components/HomeSplash.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="mock-extended" description="mock-extended docs home" bodyClass="home-body">
+  <main class="home-main">
+    <HomeSplash />
+  </main>
+</BaseLayout>
+
+<style>
+  .home-main {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+  }
+</style>

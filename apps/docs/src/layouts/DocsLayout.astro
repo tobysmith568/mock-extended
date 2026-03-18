@@ -1,0 +1,150 @@
+---
+import Sidebar from "../components/Sidebar.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import BaseLayout from "./BaseLayout.astro";
+
+type DocsLayoutProps = {
+  title?: string;
+  description?: string;
+  frontmatter?: {
+    title?: string;
+    description?: string;
+  };
+};
+
+const props = Astro.props as DocsLayoutProps;
+const pageTitle = props.title ?? props.frontmatter?.title;
+const pageDescription =
+  props.description ??
+  props.frontmatter?.description ??
+  "mock-extended documentation";
+const titleWithSuffix = pageTitle ? `${pageTitle} | ` : "";
+---
+
+<BaseLayout
+  title={`${titleWithSuffix}mock-extended docs`}
+  description={pageDescription}
+  bodyClass="docs-body"
+>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">mock-extended</a>
+      <nav aria-label="Primary navigation">
+        <a href="/docs/getting-started">Docs</a>
+        <a target="_blank" href="https://github.com/tobysmith568/mock-extended">GitHub</a>
+        <ThemeToggle />
+      </nav>
+    </div>
+  </header>
+  <main class="container docs-shell">
+    <Sidebar currentPath={Astro.url.pathname} />
+    <article class="docs-content">
+      <slot />
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .container {
+    width: min(1100px, calc(100% - 2rem));
+    margin: 0 auto;
+  }
+
+  .site-header {
+    border-bottom: 1px solid var(--line);
+    background: var(--header-bg);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 3.7rem;
+    gap: 1rem;
+  }
+
+  .brand {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+
+  .site-header nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .docs-shell {
+    display: grid;
+    grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+    gap: 1.6rem;
+    padding-top: 1.3rem;
+    padding-bottom: 2rem;
+  }
+
+  .docs-content {
+    min-height: calc(100vh - 6rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card);
+    padding: clamp(1rem, 2vw, 2rem);
+    box-shadow: var(--shadow);
+  }
+
+  :global(.docs-content h1),
+  :global(.docs-content h2),
+  :global(.docs-content h3) {
+    line-height: 1.2;
+    scroll-margin-top: 5rem;
+  }
+
+  :global(.docs-content :where(p, li)) {
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  :global(.docs-content :not(pre) > code) {
+    background: var(--code-bg-inline);
+    color: var(--code-ink);
+    border: 1px solid var(--code-line);
+    border-radius: 7px;
+    padding: 0.12rem 0.38rem;
+    font-size: 0.93em;
+  }
+
+  :global(.docs-content pre) {
+    border: 1px solid var(--code-line);
+    border-radius: 12px;
+    overflow-x: auto;
+    padding: 1rem 1.05rem;
+    background: linear-gradient(180deg, var(--code-bg-top) 0%, var(--code-bg) 100%);
+    box-shadow: inset 0 1px 0 var(--code-inset);
+    line-height: 1.6;
+  }
+
+  :global(.docs-content pre:not(.astro-code) code) {
+    color: var(--code-ink-block);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  :global(:root[data-theme="dark"] .docs-content pre.astro-code),
+  :global(:root[data-theme="dark"] .docs-content pre.astro-code span) {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+
+  @media (max-width: 900px) {
+    .docs-shell {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

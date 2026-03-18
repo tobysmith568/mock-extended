@@ -13,6 +13,7 @@
     "typecheck:test": "turbo run typecheck:test",
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "serve": "turbo run serve",
     "test": "turbo run test",
     "pack": "turbo run pack"
   },

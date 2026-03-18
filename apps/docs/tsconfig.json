@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["astro/client", "@playwright/test"]
+  },
+  "include": ["src", "tests", "astro.config.mjs", "playwright.config.ts"]
+}

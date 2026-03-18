@@ -102,6 +102,14 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+      - name: Upload docs website artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: docs-website-build
+          path: apps/docs/dist
+          retention-days: 1
+          if-no-files-found: error
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -118,6 +126,10 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        working-directory: apps/docs
+        run: bunx playwright install --with-deps chromium
 
       - name: Run tests
         run: bun run test

@@ -9,12 +9,15 @@
     "ignoreUnknown": false,
     "includes": [
       "**",
-      "!**/node_modules",
+      "!**/.astro",
       "!**/.git",
-      "!**/dist",
+      "!**/.turbo",
       "!**/build",
-      "!**/.next",
-      "!**/coverage"
+      "!**/coverage",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/public",
+      "!**/test-results"
     ]
   },
   "formatter": {
@@ -27,6 +30,19 @@
       "recommended": true
     }
   },
+  "overrides": [
+    {
+      "includes": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off"
+          }
+        }
+      }
+    }
+  ],
   "assist": {
     "actions": {
       "source": {

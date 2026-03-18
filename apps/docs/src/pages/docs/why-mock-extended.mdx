@@ -1,0 +1,152 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: Why mock-extended
+description: Why partial object mocks plus force-casts create brittle tests, and how mock-extended avoids that failure mode.
+---
+
+# Why mock-extended
+
+Many TypeScript test suites eventually fall into the same pattern:
+
+```ts
+const userService = {
+  getUser: vi.fn(),
+} as unknown as IUserService;
+```
+
+It feels quick, but it is usually a sign that the test is stepping around the
+type system instead of using it.
+
+`mock-extended` exists to replace that pattern with mocks that are still easy to
+set up, but actually respect the interface you claim to be using.
+
+## The brittle partial-mock pattern
+
+The underlying idea is familiar:
+
+- create just the one or two methods a test cares about,
+- skip the rest of the interface,
+- cast the object until TypeScript stops complaining.
+
+That usually turns into:
+
+- `as IUserService`,
+- `as Partial<IUserService> as IUserService`,
+- or the most dangerous version, `as unknown as IUserService`.
+
+The problem is not that the object is partial. Partial setup is normal in tests.
+The problem is pretending that a partial object is a fully valid implementation.
+
+## Why this makes tests fragile
+
+Force-casting hides real interface drift.
+
+Imagine this interface:
+
+```ts
+interface IUserService {
+  getUser(id: string): Promise<User | null>;
+  updateUser(id: string, input: UpdateUserInput): Promise<void>;
+  audit(action: string): void;
+}
+```
+
+And a test double like this:
+
+```ts
+const userService = {
+  getUser: jest.fn(),
+} as unknown as IUserService;
+```
+
+That compiles, but several important checks are now gone:
+
+- the test can call `userService.updateUser(...)` and crash at runtime because
+  the method does not exist,
+- `getUser` can be given the wrong mock behavior or wrong arguments without a
+  useful relationship to the interface,
+- interface changes stop producing helpful failures in tests because the cast
+  suppresses them,
+- readers of the test are told "this is a complete `IUserService`" when it is
+  really just a manually assembled fragment.
+
+This is how brittle tests spread. The first cast feels harmless. Later, someone
+renames a method, adds a required dependency call, or changes a signature, and
+the tests keep compiling for the wrong reasons.
+
+## What mock-extended changes
+
+`mock-extended` keeps the convenience of partial setup without lying about the
+shape of the object.
+
+```ts
+import { createMock } from "mock-extended";
+
+const mock = createMock(() => jest.fn());
+const userService = mock<IUserService>();
+
+userService.getUser.mockResolvedValue({ id: "123" });
+```
+
+The key difference is that the mock is created from the interface itself.
+
+- methods are available lazily when accessed,
+- each method keeps the original call signature,
+- the returned value also exposes your runner's mock API,
+- the object is structurally consistent with the type you asked for.
+
+So you still avoid boilerplate, but you are no longer bypassing the compiler to
+do it.
+
+## Partial values without fake completeness
+
+Sometimes a dependency really does include fixed data alongside mocked methods.
+That is fine.
+
+```ts
+interface FeatureService {
+  enabled: boolean;
+  getFlag(name: string): boolean;
+}
+
+const mock = createMock(() => vi.fn());
+
+const service = mock<FeatureService>({
+  enabled: false,
+});
+```
+
+This is different from force-casting a handwritten object:
+
+- known values are supplied explicitly,
+- missing methods are still provided through the mock builder,
+- falsy values like `false`, `null`, and `undefined` are preserved correctly.
+
+You get a real partial initialization model instead of a type assertion escape
+hatch.
+
+## Better failure modes
+
+Good test infrastructure should fail in ways that help you repair the code.
+
+With handwritten cast-based mocks, failures tend to show up as:
+
+- `is not a function` runtime errors,
+- tests that pass while the interface has already drifted,
+- confusing setup code that hides which members are real and which are missing.
+
+With `mock-extended`, failures move earlier and become more honest:
+
+- method signatures stay connected to the interface,
+- missing setup is visible as missing mock configuration,
+- refactors have a better chance of breaking tests at compile time instead of
+  much later.
+
+## The design goal
+
+- No hard dependency on Jest, Vitest, Bun, Sinon, node:test or any other testing/mocking framework.
+- Tiny, predictable runtime behavior.
+- Lazy creation so untouched members cost nothing.
+- Practical support for partial initialization without unsafe casting.
+- Practical deep mocking support when you need it.
+- Avoid promise-like traps (`then` is ignored by default).

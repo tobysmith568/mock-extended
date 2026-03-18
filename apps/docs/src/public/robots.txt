@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://mock-extended.js.org/sitemap-index.xml

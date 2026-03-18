@@ -1,0 +1,242 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: Examples
+description: Copyable examples for the major supported test runners and common mock-extended patterns.
+---
+
+# Examples
+
+These examples all use the same core idea: create one builder from a mock
+factory, then reuse that builder across your test suite.
+
+## Jest
+
+```ts
+import { createMock } from "mock-extended";
+
+type User = { id: string };
+interface UserRepo {
+  findById: (id: string) => User | null;
+}
+
+const mock = createMock(() => jest.fn());
+
+describe("UserService", () => {
+  it("returns a user by id", () => {
+    const repo = mock<UserRepo>();
+
+    repo.findById.mockReturnValue({ id: "123" });
+
+    expect(repo.findById("123")).toEqual({ id: "123" });
+    expect(repo.findById).toHaveBeenCalledWith("123");
+  });
+});
+```
+
+## Vitest
+
+```ts
+import { createMock } from "mock-extended";
+import { describe, expect, it, vi } from "vitest";
+
+type User = { id: string };
+interface UserRepo {
+  findById: (id: string) => User | null;
+}
+
+const mock = createMock(() => vi.fn());
+
+describe("UserService", () => {
+  it("returns a user by id", () => {
+    const repo = mock<UserRepo>();
+
+    repo.findById.mockReturnValue({ id: "123" });
+
+    expect(repo.findById("123")).toEqual({ id: "123" });
+    expect(repo.findById).toHaveBeenCalledWith("123");
+  });
+});
+```
+
+## Bun
+
+```ts
+import { describe, expect, it, mock as bunMock } from "bun:test";
+import { createMock } from "mock-extended";
+
+type User = { id: string };
+interface UserRepo {
+  findById: (id: string) => User | null;
+}
+
+const mock = createMock(() => bunMock());
+
+describe("UserService", () => {
+  it("returns a user by id", () => {
+    const repo = mock<UserRepo>();
+
+    repo.findById.mockReturnValue({ id: "123" });
+
+    expect(repo.findById("123")).toEqual({ id: "123" });
+    expect(repo.findById).toHaveBeenCalledWith("123");
+  });
+});
+```
+
+## Sinon
+
+```ts
+import { describe, expect, it } from "bun:test";
+import sinon from "sinon";
+import { createMock } from "mock-extended";
+
+type User = { id: string };
+interface UserRepo {
+  findById: (id: string) => User | null;
+}
+
+const mock = createMock(() => sinon.stub());
+
+describe("UserService", () => {
+  it("returns a user by id", () => {
+    const repo = mock<UserRepo>();
+
+    repo.findById.returns({ id: "123" });
+
+    expect(repo.findById("123")).toEqual({ id: "123" });
+    expect(repo.findById.calledWithExactly("123")).toBe(true);
+  });
+});
+```
+
+## node:test
+
+```ts
+import assert from "node:assert/strict";
+import { describe, it, mock as nodeMock } from "node:test";
+import { createMock } from "mock-extended";
+
+type User = { id: string };
+interface UserRepo {
+  findById: (id: string) => User | null;
+}
+
+const createNodeMock = () => nodeMock.fn((..._args: any[]): any => undefined);
+const mock = createMock(createNodeMock);
+
+describe("UserService", () => {
+  it("returns a user by id", () => {
+    const repo = mock<UserRepo>();
+
+    const findByIdMock = nodeMock.fn(() => ({ id: "123" }));
+    repo.findById = findByIdMock as unknown as typeof repo.findById;
+
+    assert.deepEqual(repo.findById("123"), { id: "123" });
+    assert.equal(findByIdMock.mock.calls.length, 1);
+  });
+});
+```
+
+## Deep mocking
+
+```ts
+import { createMock } from "mock-extended";
+
+interface Service {
+  nested: {
+    client: {
+      run: (id: string) => string;
+    };
+  };
+}
+
+const mock = createMock(() => jest.fn(), {
+  deep: true,
+  funcPropSupport: true,
+});
+
+const service = mock<Service>();
+
+service.nested.client.run.mockReturnValue("ok");
+
+expect(service.nested.client.run("123")).toBe("ok");
+```
+
+## Deep partials
+
+```ts
+import { createMock } from "mock-extended";
+
+interface Dependency {
+  nested: {
+    enabled: boolean;
+    service: {
+      run(): string;
+    };
+  };
+}
+
+const mock = createMock(() => jest.fn(), { deep: true });
+
+const dep = mock<Dependency>({
+  nested: {
+    enabled: false,
+    service: {},
+  },
+});
+
+dep.nested.service.run.mockReturnValue("ok");
+
+expect(dep.nested.enabled).toBe(false);
+expect(dep.nested.service.run()).toBe("ok");
+```
+
+## Function properties with nested members
+
+```ts
+import { createMock } from "mock-extended";
+
+interface Dependency {
+  tool: ((arg: string) => number) & {
+    meta: {
+      value: () => number;
+    };
+  };
+}
+
+const mock = createMock(() => jest.fn(), {
+  deep: true,
+  funcPropSupport: true,
+});
+
+const dep = mock<Dependency>();
+
+dep.tool.mockReturnValue(3);
+dep.tool.meta.value.mockReturnValue(11);
+
+expect(dep.tool("x")).toBe(3);
+expect(dep.tool.meta.value()).toBe(11);
+```
+
+## Keeping framework internals untouched
+
+If you enable deep function-property support, some runner-specific internals may
+also be exposed through the proxy. Use `ignoredProps` to exclude them.
+
+```ts
+const mock = createMock(() => jest.fn(), {
+  deep: true,
+  funcPropSupport: true,
+  ignoredProps: ["calls"],
+});
+
+const service = mock<Service>();
+
+service.nested.client.run("123");
+
+const calls = service.nested.client.run.mock.calls;
+expect(calls).toEqual([["123"]]);
+```
+
+That pattern is especially useful when you want deep recursion for your own API
+shape without hiding data exposed by the underlying mock implementation.
