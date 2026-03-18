@@ -11,7 +11,10 @@ export default defineConfig({
   integrations: [mdx(), preact()],
   markdown: {
     shikiConfig: {
-      theme: "github-light",
+      themes: {
+        light: "github-light",
+        dark: "github-dark",
+      },
     },
     remarkPlugins: [remarkGfm, remarkSmartypants],
     rehypePlugins: [

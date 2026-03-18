@@ -1,0 +1,115 @@
+---
+import { moonOutline, sunny } from "ionicons/icons";
+---
+
+<button class="theme-toggle" type="button" data-theme-toggle data-theme-state="light">
+  <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+    <img src={moonOutline} alt="" loading="lazy" decoding="async" />
+  </span>
+  <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+    <img src={sunny} alt="" loading="lazy" decoding="async" />
+  </span>
+</button>
+
+<script is:inline>
+  (() => {
+    const storageKey = "mock-extended-theme";
+    const root = document.documentElement;
+    const button = document.querySelector("[data-theme-toggle]");
+
+    if (!(button instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const getTheme = () => (root.dataset.theme === "dark" ? "dark" : "light");
+
+    const setButtonLabel = () => {
+      const currentTheme = getTheme();
+      const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+      button.dataset.themeState = currentTheme;
+      button.setAttribute("aria-pressed", String(currentTheme === "dark"));
+      button.setAttribute("aria-label", `Switch to ${nextTheme} theme`);
+      button.setAttribute("title", `Switch to ${nextTheme} theme`);
+    };
+
+    button.addEventListener("click", () => {
+      const nextTheme = getTheme() === "dark" ? "light" : "dark";
+      root.dataset.theme = nextTheme;
+      root.style.colorScheme = nextTheme;
+
+      try {
+        localStorage.setItem(storageKey, nextTheme);
+      } catch {
+        // Ignore storage access issues and keep in-memory state.
+      }
+
+      setButtonLabel();
+    });
+
+    setButtonLabel();
+  })();
+</script>
+
+<style>
+  .theme-toggle {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--brand);
+    border-radius: 12px;
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0;
+    font: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    transition:
+      transform 140ms ease,
+      background-color 140ms ease,
+      border-color 140ms ease;
+    cursor: pointer;
+  }
+
+  .theme-toggle__icon {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .theme-toggle__icon img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(20%) saturate(1199%)
+      hue-rotate(126deg) brightness(96%) contrast(90%);
+  }
+
+  .theme-toggle[data-theme-state="light"] .theme-toggle__icon--moon,
+  .theme-toggle[data-theme-state="dark"] .theme-toggle__icon--sun {
+    display: flex;
+  }
+
+  .theme-toggle:hover {
+    background: var(--brand-soft);
+    transform: translateY(-1px);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+
+  :global(:root[data-theme="dark"] .theme-toggle) {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  :global(:root[data-theme="dark"] .theme-toggle__icon img) {
+    filter: brightness(0) saturate(100%) invert(78%) sepia(22%) saturate(406%)
+      hue-rotate(116deg) brightness(92%) contrast(87%);
+  }
+</style>

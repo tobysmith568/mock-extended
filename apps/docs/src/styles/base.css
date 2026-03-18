@@ -2,6 +2,14 @@
   box-sizing: border-box;
 }
 
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
 html,
 body {
   margin: 0;
@@ -34,5 +42,5 @@ pre {
 }
 
 .heading-anchor {
-  color: #95a39f;
+  color: var(--anchor);
 }

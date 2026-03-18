@@ -1,5 +1,6 @@
 ---
 import Sidebar from "../components/Sidebar.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
 import BaseLayout from "./BaseLayout.astro";
 
 type DocsLayoutProps = {
@@ -31,6 +32,7 @@ const titleWithSuffix = pageTitle ? `${pageTitle} | ` : "";
       <nav aria-label="Primary navigation">
         <a href="/docs/getting-started">Docs</a>
         <a href="https://github.com/tobysmith568/mock-extended">GitHub</a>
+        <ThemeToggle />
       </nav>
     </div>
   </header>
@@ -50,7 +52,7 @@ const titleWithSuffix = pageTitle ? `${pageTitle} | ` : "";
 
   .site-header {
     border-bottom: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--header-bg);
     backdrop-filter: blur(8px);
     position: sticky;
     top: 0;
@@ -73,6 +75,7 @@ const titleWithSuffix = pageTitle ? `${pageTitle} | ` : "";
 
   .site-header nav {
     display: flex;
+    align-items: center;
     gap: 1rem;
   }
 
@@ -119,18 +122,24 @@ const titleWithSuffix = pageTitle ? `${pageTitle} | ` : "";
     border-radius: 12px;
     overflow-x: auto;
     padding: 1rem 1.05rem;
-    background: linear-gradient(180deg, #f8fcfa 0%, var(--code-bg) 100%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    background: linear-gradient(180deg, var(--code-bg-top) 0%, var(--code-bg) 100%);
+    box-shadow: inset 0 1px 0 var(--code-inset);
     line-height: 1.6;
   }
 
-  :global(.docs-content pre code) {
+  :global(.docs-content pre:not(.astro-code) code) {
     color: var(--code-ink-block);
     background: transparent;
     border: 0;
     padding: 0;
     font-size: 0.95rem;
     font-weight: 500;
+  }
+
+  :global(:root[data-theme="dark"] .docs-content pre.astro-code),
+  :global(:root[data-theme="dark"] .docs-content pre.astro-code span) {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
   }
 
   @media (max-width: 900px) {
