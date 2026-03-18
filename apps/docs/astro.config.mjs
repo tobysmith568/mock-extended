@@ -6,7 +6,11 @@ import remarkGfm from "remark-gfm";
 import remarkSmartypants from "remark-smartypants";
 
 export default defineConfig({
+  site: process.env.ASTRO_SITE ?? "http://localhost:4321",
   output: "static",
+  build: {
+    format: "file",
+  },
   integrations: [mdx()],
   markdown: {
     shikiConfig: {

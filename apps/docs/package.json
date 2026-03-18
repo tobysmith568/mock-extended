@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "build": "astro build",
     "dev": "astro dev",
+    "serve": "serve dist -l 4321",
     "test": "playwright test"
   },
   "devDependencies": {
@@ -18,6 +19,7 @@
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
-    "remark-smartypants": "^3.0.2"
+    "remark-smartypants": "^3.0.2",
+    "serve": "^14.2.5"
   }
 }
