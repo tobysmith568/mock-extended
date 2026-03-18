@@ -21,6 +21,13 @@ export const createMockHandler = <TMockFn extends AnyFunction>({
 
       if (Reflect.has(obj, prop)) {
         const existing = Reflect.get(obj, prop, receiver);
+
+        // ECMAScript Proxy invariant: own non-configurable, non-writable data
+        // properties must be returned as their exact stored value.
+        if (hasImmutableOwnDataProperty(obj, prop)) {
+          return existing;
+        }
+
         const proxied = proxifyValue(existing);
 
         if (proxied !== existing) {
@@ -43,4 +50,15 @@ export const createMockHandler = <TMockFn extends AnyFunction>({
       return Reflect.set(obj, prop, proxifyValue(value), receiver);
     },
   };
+};
+
+const hasImmutableOwnDataProperty = (obj: object, prop: string): boolean => {
+  const ownDescriptor = Reflect.getOwnPropertyDescriptor(obj, prop);
+
+  return !!(
+    ownDescriptor &&
+    !ownDescriptor.configurable &&
+    "value" in ownDescriptor &&
+    !ownDescriptor.writable
+  );
 };
