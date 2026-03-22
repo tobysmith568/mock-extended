@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 20 600 270">
+  <defs>
+    <radialGradient id="b" cx="15%" cy="15%" r="35%">
+      <stop offset="0%" stop-color="#f9d87f"/>
+      <stop offset="100%" stop-color="#f9d87f00"/>
+    </radialGradient>
+    <radialGradient id="d" cx="80%" cy="10%" r="35%">
+      <stop offset="0%" stop-color="#8ad3c0"/>
+      <stop offset="100%" stop-color="#8ad3c000"/>
+    </radialGradient>
+    <linearGradient id="a" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffef8"/>
+      <stop offset="55%" stop-color="#f6fbff"/>
+      <stop offset="100%" stop-color="#fdf6ee"/>
+    </linearGradient>
+    <clipPath id="c">
+      <rect width="560" height="240" x="60" y="40" rx="28"/>
+    </clipPath>
+  </defs>
+  <rect width="560" height="240" x="60" y="40" fill="url(#a)" rx="28" style="stroke:none;color:#000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;,-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <rect width="560" height="240" x="60" y="40" fill="url(#b)" clip-path="url(#c)" rx="28" style="stroke:none;color:#000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;,-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <rect width="560" height="240" x="60" y="40" fill="url(#d)" clip-path="url(#c)" rx="28" style="stroke:none;color:#000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;,-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <rect width="560" height="240" x="60" y="40" rx="28" style="fill:none;stroke:#d8e7e0;color:#000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;,-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <text x="340" y="148" dominant-baseline="central" style="fill:#1d2b27;stroke:none;color:#000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Outfit,&quot;Avenir Next&quot;,&quot;Segoe UI&quot;,sans-serif;font-size:38px;font-weight:600;text-anchor:middle;dominant-baseline:central" text-anchor="middle">mock<tspan style="fill:#115e54;stroke:none;color:#000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Outfit,&quot;Avenir Next&quot;,&quot;Segoe UI&quot;,sans-serif;font-size:38px;font-weight:600;text-anchor:middle;dominant-baseline:central">-extended</tspan></text>
+  <text x="340" y="184" dominant-baseline="central" style="fill:#3f5852;stroke:none;color:#000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;JetBrains Mono&quot;,Consolas,monospace;font-size:12px;font-weight:500;text-anchor:middle;dominant-baseline:central" text-anchor="middle">FRAMEWORK-AGNOSTIC · TYPESAFE</text>
+</svg>
