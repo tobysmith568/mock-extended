@@ -1,8 +1,14 @@
-# mock-extended
+<p align="center">
+  <img src="https://raw.githubusercontent.com/tobysmith568/mock-extended/main/assets/mock_extended_banner.svg" alt="mock-extended banner" width="820" />
+</p>
 
-Framework-agnostic TypeScript mocks for interfaces and classes.
+<p align="center">
+  Framework-agnostic TypeScript mocks for interfaces and classes.
+</p>
 
-`mock-extended` is not coupled to a specific test runner. You provide a mock function factory (for example `jest.fn` or `vi.fn`), and `mock-extended` handles lazy property-based mock creation with strong types.
+<p align="center">
+  <code>mock-extended</code> is not coupled to a specific test runner. You provide a mock function factory (for example <code>jest.fn</code> or <code>vi.fn</code>), and <code>mock-extended</code> handles lazy property-based mock creation with strong types.
+</p>
 
 ## Why use it?
 
