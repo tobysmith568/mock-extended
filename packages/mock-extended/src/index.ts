@@ -7,4 +7,5 @@ export type {
   MethodMock,
   MockFactory,
   MockProxy,
+  PartialMockInput,
 } from "./lib/types";

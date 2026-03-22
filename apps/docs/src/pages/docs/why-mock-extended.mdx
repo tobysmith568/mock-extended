@@ -14,11 +14,9 @@ const userService = {
 } as unknown as IUserService;
 ```
 
-It feels quick, but it is usually a sign that the test is stepping around the
-type system instead of using it.
+It feels quick, but it is usually a sign that the test is stepping around the type system instead of using it.
 
-`mock-extended` exists to replace that pattern with mocks that are still easy to
-set up, but actually respect the interface you claim to be using.
+`mock-extended` exists to replace that pattern with mocks that are still easy to set up, but actually respect the interface you claim to be using.
 
 ## The brittle partial-mock pattern
 
@@ -34,8 +32,7 @@ That usually turns into:
 - `as Partial<IUserService> as IUserService`,
 - or the most dangerous version, `as unknown as IUserService`.
 
-The problem is not that the object is partial. Partial setup is normal in tests.
-The problem is pretending that a partial object is a fully valid implementation.
+The problem is not that the object is partial. Partial setup is normal in tests. The problem is pretending that a partial object is a fully valid implementation.
 
 ## Why this makes tests fragile
 
@@ -61,23 +58,16 @@ const userService = {
 
 That compiles, but several important checks are now gone:
 
-- the test can call `userService.updateUser(...)` and crash at runtime because
-  the method does not exist,
-- `getUser` can be given the wrong mock behavior or wrong arguments without a
-  useful relationship to the interface,
-- interface changes stop producing helpful failures in tests because the cast
-  suppresses them,
-- readers of the test are told "this is a complete `IUserService`" when it is
-  really just a manually assembled fragment.
+- the test can call `userService.updateUser(...)` and crash at runtime because the method does not exist,
+- `getUser` can be given the wrong mock behavior or wrong arguments without a useful relationship to the interface,
+- interface changes stop producing helpful failures in tests because the cast suppresses them,
+- readers of the test are told "this is a complete `IUserService`" when it is really just a manually assembled fragment.
 
-This is how brittle tests spread. The first cast feels harmless. Later, someone
-renames a method, adds a required dependency call, or changes a signature, and
-the tests keep compiling for the wrong reasons.
+This is how brittle tests spread. The first cast feels harmless. Later, someone renames a method, adds a required dependency call, or changes a signature, and the tests keep compiling for the wrong reasons.
 
 ## What mock-extended changes
 
-`mock-extended` keeps the convenience of partial setup without lying about the
-shape of the object.
+`mock-extended` keeps the convenience of partial setup without lying about the shape of the object.
 
 ```ts
 import { createMock } from "mock-extended";
@@ -95,13 +85,11 @@ The key difference is that the mock is created from the interface itself.
 - the returned value also exposes your runner's mock API,
 - the object is structurally consistent with the type you asked for.
 
-So you still avoid boilerplate, but you are no longer bypassing the compiler to
-do it.
+So you still avoid boilerplate, but you are no longer bypassing the compiler to do it.
 
 ## Partial values without fake completeness
 
-Sometimes a dependency really does include fixed data alongside mocked methods.
-That is fine.
+Sometimes a dependency really does include fixed data alongside mocked methods. That is fine.
 
 ```ts
 interface FeatureService {
@@ -111,7 +99,7 @@ interface FeatureService {
 
 const mock = createMock(() => vi.fn());
 
-const service = mock<FeatureService>({
+const service = mock.withDefaults<FeatureService>()({
   enabled: false,
 });
 ```
@@ -122,8 +110,7 @@ This is different from force-casting a handwritten object:
 - missing methods are still provided through the mock builder,
 - falsy values like `false`, `null`, and `undefined` are preserved correctly.
 
-You get a real partial initialization model instead of a type assertion escape
-hatch.
+You get a real partial initialization model instead of a type assertion escape hatch.
 
 ## Better failure modes
 

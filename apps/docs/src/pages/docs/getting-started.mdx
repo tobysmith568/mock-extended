@@ -8,9 +8,7 @@ description: Install mock-extended, create a typed builder, and understand the c
 
 `mock-extended` has a deliberately small API.
 
-You call `createMock(factory, options?)` once for your test stack, then use the
-returned builder to create typed mocks for interfaces or classes throughout your
-tests.
+You call `createMock(factory, options?)` once for your test stack, then use the returned builder to create typed mocks for interfaces or classes throughout your tests.
 
 ## Install the package
 
@@ -30,8 +28,7 @@ interface UserRepo {
 }
 ```
 
-`mock-extended` works best when you start from the real shape you want the test
-double to satisfy.
+`mock-extended` works best when you start from the real shape you want the test double to satisfy.
 
 ## 1. Create a mock builder
 
@@ -53,8 +50,7 @@ Use the builder with the service shape from step 0:
 const repo = mock<UserRepo>();
 ```
 
-Every function property you access is created lazily and typed from your
-factory:
+Every function property you access is created lazily and typed from your factory:
 
 ```ts
 repo.findById.mockReturnValue({ id: "123" });
@@ -65,8 +61,7 @@ expect(repo.findById).toHaveBeenCalledWith("123");
 
 ## 3. Seed known values with a partial
 
-You can pass a partial object when creating a mock. This is useful when part of
-the dependency is fixed data and the rest should stay lazily mocked.
+Use `withDefaults` when part of the dependency is fixed data and the rest should stay lazily mocked.
 
 ```ts
 interface ConfigRepo {
@@ -75,7 +70,7 @@ interface ConfigRepo {
   load(): string;
 }
 
-const repo = mock<ConfigRepo>({
+const repo = mock.withDefaults<ConfigRepo>()({
   enabled: false,
   prefix: undefined,
 });
@@ -83,8 +78,19 @@ const repo = mock<ConfigRepo>({
 repo.load.mockReturnValue("ready");
 ```
 
-Falsy values, `null`, and `undefined` are preserved instead of being replaced by
-mock behavior.
+Falsy values, `null`, and `undefined` are preserved instead of being replaced by mock behavior.
+
+If you want provided function defaults to keep their own function type (instead of being exposed as mock functions), use `withDefaults`:
+
+```ts
+const strictRepo = mock.withDefaults<ConfigRepo>()({
+  enabled: false,
+  load: (_id: string) => "ready",
+});
+
+strictRepo.load("123");
+// strictRepo.load.mockReturnValue("next"); // type error
+```
 
 ## 4. Swap runners by swapping the factory
 
@@ -106,8 +112,7 @@ This makes `mock-extended` useful when:
 
 ## 5. Turn on deep mocking when the shape is nested
 
-Deep mode recursively proxies nested plain objects so you can configure deep
-methods without building every branch yourself.
+Deep mode recursively proxies nested plain objects so you can configure deep methods without building every branch yourself.
 
 ```ts
 interface Service {
@@ -124,9 +129,7 @@ const service = deepMock<Service>();
 service.nested.client.run.mockReturnValue("ok");
 ```
 
-If you also need callable function properties to expose nested mocked members,
-add `funcPropSupport: true`. That behavior is covered in more detail on the
-Features and Examples pages.
+If you also need callable function properties to expose nested mocked members, add `funcPropSupport: true`. That behavior is covered in more detail on the Features and Examples pages.
 
 ## Exported types
 
@@ -135,6 +138,7 @@ The package also exports a small set of utility types for advanced use cases:
 - `MockFactory`
 - `MethodMock`
 - `MockProxy`
+- `PartialMockInput`
 - `DeepMockProxy`
 - `DeepMockProxyWithFuncPropSupport`
 - `CreateMockOptions`

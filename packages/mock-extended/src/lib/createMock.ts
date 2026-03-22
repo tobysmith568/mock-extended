@@ -5,7 +5,7 @@ import { createProxifyValue } from "./createProxifyValue";
 import { isPlainObject } from "./isPlainObject";
 import type { ResolvedMockProxy } from "./mockProxyResolver";
 import { preprocessTarget } from "./preprocessTarget";
-import type { AnyFunction, MockFactory } from "./types";
+import type { AnyFunction, MockFactory, PartialMockInput } from "./types";
 
 export const createMock = <
   TMockFn extends AnyFunction,
@@ -32,9 +32,9 @@ export const createMock = <
     proxifyValue,
   });
 
-  return <T extends object>(
-    partial: Partial<T> = {},
-  ): ResolvedMockProxy<T, TMockFn, TOptions> => {
+  const createFromPartial = <T extends object>(
+    partial: PartialMockInput<T>,
+  ) => {
     const target = preprocessTarget(
       {
         ...(partial as Record<PropertyKey, unknown>),
@@ -43,10 +43,35 @@ export const createMock = <
       proxifyValue,
     );
 
-    return new Proxy(target, handler) as ResolvedMockProxy<
+    return new Proxy(target, handler);
+  };
+
+  type BuildMock = {
+    <T extends object>(): ResolvedMockProxy<T, TMockFn, TOptions, never>;
+    withDefaults: <T extends object>() => <
+      TProvided extends PartialMockInput<T>,
+    >(
+      partial: TProvided,
+    ) => ResolvedMockProxy<T, TMockFn, TOptions, TProvided>;
+  };
+
+  const buildMock = (<T extends object>() =>
+    createFromPartial<T>({} as PartialMockInput<T>) as ResolvedMockProxy<
       T,
       TMockFn,
-      TOptions
-    >;
-  };
+      TOptions,
+      never
+    >) as BuildMock;
+
+  buildMock.withDefaults =
+    <T extends object>() =>
+    <TProvided extends PartialMockInput<T>>(partial: TProvided) =>
+      createFromPartial<T>(partial) as ResolvedMockProxy<
+        T,
+        TMockFn,
+        TOptions,
+        TProvided
+      >;
+
+  return buildMock;
 };

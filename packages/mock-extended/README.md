@@ -172,7 +172,9 @@ describe("UserService", () => {
 Creates a typed mock builder.
 
 - `factory`: `() => TMockFn`
-- returns: `<T>(partial?: Partial<T>) => MockProxy<T, TMockFn>` (or deep variants depending on options)
+- returns:
+  - `<T>() => MockProxy<T, TMockFn>` for fully lazy mocks
+  - `withDefaults<T>()(partial)` for partial initialization with provided-value-aware typing (or deep variants depending on options)
 
 #### Options
 
@@ -184,8 +186,8 @@ Creates a typed mock builder.
 
 ## Partial input
 
-You can pass a partial object to seed known values while leaving missing
-methods lazily mocked.
+Use `withDefaults` to seed known values while leaving missing methods lazily
+mocked.
 
 ```ts
 interface ConfigRepo {
@@ -195,7 +197,7 @@ interface ConfigRepo {
 }
 
 const mock = createMock(() => jest.fn());
-const repo = mock<ConfigRepo>({
+const repo = mock.withDefaults<ConfigRepo>()({
   enabled: false,
   tag: undefined,
 });
@@ -205,6 +207,31 @@ repo.load.mockReturnValue("ok");
 expect(repo.enabled).toBe(false);
 expect(repo.tag).toBeUndefined();
 expect(repo.load()).toBe("ok");
+```
+
+### Preserve provided function default types
+
+`withDefaults` preserves explicitly provided function defaults as their own
+function type instead of exposing them as `MethodMock`:
+
+```ts
+interface ConfigRepo {
+  enabled: boolean;
+  load: (id: string) => string;
+}
+
+const mock = createMock(() => jest.fn());
+
+const repo = mock.withDefaults<ConfigRepo>()({
+  enabled: false,
+  load: (_id: string) => "ready",
+});
+
+// Works
+expect(repo.load("123")).toBe("ready");
+
+// Type error: `load` is a provided function, not a generated mock function
+// repo.load.mockReturnValue("next");
 ```
 
 ## Deep mocks

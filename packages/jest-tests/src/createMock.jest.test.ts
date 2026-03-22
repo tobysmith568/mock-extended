@@ -2,6 +2,7 @@ import { createMock } from "mock-extended";
 
 describe("mock-extended with Jest", () => {
   type Dependency = {
+    count: number;
     doWork: (arg: string) => number;
   };
 
@@ -92,80 +93,95 @@ describe("mock-extended with Jest", () => {
     expect(dep.nested).toBe(dep.nested);
   });
 
-  test("does not proxy class instances in deep mode", () => {
-    class Counter {
-      constructor(private readonly value: number) {}
+  describe("withDefaults", () => {
+    test("keeps provided method defaults as plain function types", () => {
+      const mock = createMock(() => jest.fn());
+      const dep = mock.withDefaults<Dependency>()({
+        count: 5,
+        doWork: (_arg: string) => 123,
+      });
 
-      current() {
-        return this.value;
-      }
-    }
+      expect(dep.count).toBe(5);
+      expect(dep.doWork("abc")).toBe(123);
 
-    const counter = new Counter(7);
-    const plain = {
-      nested: {},
-    } as {
-      nested: {
-        run: () => number;
+      const __typecheckOnly = () => {
+        // @ts-expect-error Provided function defaults should not expose Jest mock APIs.
+        dep.doWork.mockReturnValue(6);
       };
-    };
-
-    const mock = createMock(() => jest.fn(), { deep: true });
-    const dep = mock<{
-      counter: Counter;
-      plain: {
-        nested: {
-          run: () => number;
-        };
-      };
-    }>({ counter, plain });
-
-    dep.plain.nested.run.mockReturnValue(3);
-
-    expect(dep.counter).toBe(counter);
-    expect(dep.counter.current()).toBe(7);
-    expect(dep.plain).not.toBe(plain);
-    expect(dep.plain.nested.run()).toBe(3);
-  });
-
-  describe("partial values", () => {
-    type PartialDependency = {
-      enabled: boolean;
-      count: number;
-      note: string | undefined;
-      nested: {
-        service: {
-          run: () => string;
-        };
-      };
-    };
-
-    test("preserves explicit partial values", () => {
-      const mock = createMock(() => jest.fn(), { deep: true });
-      const dep = mock<PartialDependency>({
-        enabled: false,
-        count: 0,
-        note: undefined,
-        nested: { service: {} },
-      } as Partial<PartialDependency>);
-
-      expect(dep.enabled).toBe(false);
-      expect(dep.count).toBe(0);
-      expect(dep.note).toBeUndefined();
+      void __typecheckOnly;
     });
 
-    test("lazy-mocks missing deep methods from partial input", () => {
+    test("does not proxy class instances in deep mode", () => {
+      class Counter {
+        constructor(private readonly value: number) {}
+
+        current() {
+          return this.value;
+        }
+      }
+
+      const counter = new Counter(7);
+      const plain = {
+        nested: {},
+      };
+
       const mock = createMock(() => jest.fn(), { deep: true });
-      const dep = mock<PartialDependency>({
-        enabled: false,
-        count: 0,
-        note: undefined,
-        nested: { service: {} },
-      } as Partial<PartialDependency>);
+      const dep = mock.withDefaults<{
+        counter: Counter;
+        plain: {
+          nested: {
+            run: () => number;
+          };
+        };
+      }>()({ counter, plain });
 
-      dep.nested.service.run.mockReturnValue("ok");
+      dep.plain.nested.run.mockReturnValue(3);
 
-      expect(dep.nested.service.run()).toBe("ok");
+      expect(dep.counter).toBe(counter);
+      expect(dep.counter.current()).toBe(7);
+      expect(dep.plain).not.toBe(plain);
+      expect(dep.plain.nested.run()).toBe(3);
+    });
+
+    describe("partial values", () => {
+      type PartialDependency = {
+        enabled: boolean;
+        count: number;
+        note: string | undefined;
+        nested: {
+          service: {
+            run: () => string;
+          };
+        };
+      };
+
+      test("preserves explicit partial values", () => {
+        const mock = createMock(() => jest.fn(), { deep: true });
+        const dep = mock.withDefaults<PartialDependency>()({
+          enabled: false,
+          count: 0,
+          note: undefined,
+          nested: { service: {} },
+        });
+
+        expect(dep.enabled).toBe(false);
+        expect(dep.count).toBe(0);
+        expect(dep.note).toBeUndefined();
+      });
+
+      test("lazy-mocks missing deep methods from partial input", () => {
+        const mock = createMock(() => jest.fn(), { deep: true });
+        const dep = mock.withDefaults<PartialDependency>()({
+          enabled: false,
+          count: 0,
+          note: undefined,
+          nested: { service: {} },
+        });
+
+        dep.nested.service.run.mockReturnValue("ok");
+
+        expect(dep.nested.service.run()).toBe("ok");
+      });
     });
   });
 });

@@ -83,84 +83,101 @@ describe("mock-extended with node:test mock.fn", () => {
     assert.deepEqual(runMock.mock.calls[0]?.arguments, ["x"]);
   });
 
-  it("does not proxy class instances in deep mode", () => {
-    class Counter {
-      #value: number;
+  describe("withDefaults", () => {
+    it("keeps provided method defaults as plain function types", () => {
+      const mock = createMock(createMockFn);
+      const dep = mock.withDefaults<Dependency>()({
+        doWork: (_arg: string) => 123,
+      });
 
-      constructor(value: number) {
-        this.#value = value;
-      }
+      assert.equal(dep.doWork("abc"), 123);
 
-      current() {
-        return this.#value;
-      }
-    }
-
-    const counter = new Counter(7);
-    const plain = {
-      nested: {},
-    } as {
-      nested: {
-        run: () => number;
+      const __typecheckOnly = () => {
+        // @ts-expect-error Provided function defaults should not expose node:test mock metadata.
+        dep.doWork.mock.calls;
       };
-    };
-
-    const mock = createMock(createMockFn, { deep: true });
-    const dep = mock<{ counter: Counter; plain: typeof plain }>({
-      counter,
-      plain,
+      void __typecheckOnly;
     });
 
-    const runMock = nodeMock.fn(() => 3);
-    dep.plain.nested.run = runMock as unknown as typeof dep.plain.nested.run;
+    it("does not proxy class instances in deep mode", () => {
+      class Counter {
+        #value: number;
 
-    assert.equal(dep.counter as unknown as Counter, counter);
-    assert.equal((dep.counter as unknown as Counter).current(), 7);
-    assert.notEqual(dep.plain, plain);
-    assert.equal(dep.plain.nested.run(), 3);
-    assert.equal(runMock.mock.calls.length, 1);
-  });
+        constructor(value: number) {
+          this.#value = value;
+        }
 
-  describe("partial values", () => {
-    type PartialDependency = {
-      enabled: boolean;
-      count: number;
-      note: string | undefined;
-      nested: {
-        service: {
-          run: () => string;
+        current() {
+          return this.#value;
+        }
+      }
+
+      const counter = new Counter(7);
+      const plain = {
+        nested: {},
+      };
+
+      const mock = createMock(createMockFn, { deep: true });
+      const dep = mock.withDefaults<{
+        counter: Counter;
+        plain: {
+          nested: {
+            run: () => number;
+          };
+        };
+      }>()({ counter, plain });
+
+      const runMock = nodeMock.fn(() => 3);
+      dep.plain.nested.run = runMock as unknown as typeof dep.plain.nested.run;
+
+      assert.equal(dep.counter as unknown as Counter, counter);
+      assert.equal((dep.counter as unknown as Counter).current(), 7);
+      assert.notEqual(dep.plain, plain);
+      assert.equal(dep.plain.nested.run(), 3);
+      assert.equal(runMock.mock.calls.length, 1);
+    });
+
+    describe("partial values", () => {
+      type PartialDependency = {
+        enabled: boolean;
+        count: number;
+        note: string | undefined;
+        nested: {
+          service: {
+            run: () => string;
+          };
         };
       };
-    };
 
-    it("preserves explicit partial values", () => {
-      const mock = createMock(createMockFn, { deep: true });
-      const dep = mock<PartialDependency>({
-        enabled: false,
-        count: 0,
-        note: undefined,
-        nested: { service: {} },
-      } as Partial<PartialDependency>);
+      it("preserves explicit partial values", () => {
+        const mock = createMock(createMockFn, { deep: true });
+        const dep = mock.withDefaults<PartialDependency>()({
+          enabled: false,
+          count: 0,
+          note: undefined,
+          nested: { service: {} },
+        });
 
-      assert.equal(dep.enabled, false);
-      assert.equal(dep.count, 0);
-      assert.equal(dep.note, undefined);
-    });
+        assert.equal(dep.enabled, false);
+        assert.equal(dep.count, 0);
+        assert.equal(dep.note, undefined);
+      });
 
-    it("lazy-mocks missing deep methods from partial input", () => {
-      const mock = createMock(createMockFn, { deep: true });
-      const dep = mock<PartialDependency>({
-        enabled: false,
-        count: 0,
-        note: undefined,
-        nested: { service: {} },
-      } as Partial<PartialDependency>);
-      const runMock = nodeMock.fn(() => "ok");
+      it("lazy-mocks missing deep methods from partial input", () => {
+        const mock = createMock(createMockFn, { deep: true });
+        const dep = mock.withDefaults<PartialDependency>()({
+          enabled: false,
+          count: 0,
+          note: undefined,
+          nested: { service: {} },
+        });
+        const runMock = nodeMock.fn(() => "ok");
 
-      dep.nested.service.run =
-        runMock as unknown as typeof dep.nested.service.run;
+        dep.nested.service.run =
+          runMock as unknown as typeof dep.nested.service.run;
 
-      assert.equal(dep.nested.service.run(), "ok");
+        assert.equal(dep.nested.service.run(), "ok");
+      });
     });
   });
 });

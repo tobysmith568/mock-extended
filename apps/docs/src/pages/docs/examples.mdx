@@ -178,7 +178,7 @@ interface Dependency {
 
 const mock = createMock(() => jest.fn(), { deep: true });
 
-const dep = mock<Dependency>({
+const dep = mock.withDefaults<Dependency>()({
   nested: {
     enabled: false,
     service: {},
@@ -189,6 +189,23 @@ dep.nested.service.run.mockReturnValue("ok");
 
 expect(dep.nested.enabled).toBe(false);
 expect(dep.nested.service.run()).toBe("ok");
+```
+
+## Preserve provided function default types
+
+```ts
+type Dependency = {
+  doWork: (arg: string) => number;
+};
+
+const mock = createMock(() => jest.fn());
+
+const dep = mock.withDefaults<Dependency>()({
+  doWork: (_arg: string) => 123,
+});
+
+expect(dep.doWork("abc")).toBe(123);
+// dep.doWork.mockReturnValue(6); // type error
 ```
 
 ## Function properties with nested members

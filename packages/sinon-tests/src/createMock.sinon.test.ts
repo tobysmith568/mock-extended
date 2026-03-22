@@ -91,86 +91,99 @@ describe("mock-extended with Sinon", () => {
     expect(dep.nested).toBe(dep.nested);
   });
 
-  test("does not proxy class instances in deep mode", () => {
-    class Counter {
-      private readonly value: number;
+  describe("withDefaults", () => {
+    test("keeps provided method defaults as plain function types", () => {
+      const mock = createMock(() => sinon.stub());
+      const dep = mock.withDefaults<Dependency>()({
+        doWork: (_arg: string) => 123,
+      });
 
-      constructor(value: number) {
-        this.value = value;
-      }
+      expect(dep.doWork("abc")).toBe(123);
 
-      current() {
-        return this.value;
-      }
-    }
-
-    const counter = new Counter(7);
-    const plain = {
-      nested: {},
-    } as {
-      nested: {
-        run: () => number;
+      const __typecheckOnly = () => {
+        // @ts-expect-error Provided function defaults should not expose Sinon stub APIs.
+        dep.doWork.returns(6);
       };
-    };
-
-    const mock = createMock(() => sinon.stub(), { deep: true });
-    const dep = mock<{
-      counter: Counter;
-      plain: {
-        nested: {
-          run: () => number;
-        };
-      };
-    }>({ counter, plain });
-    const runStub = sinon.stub().returns(3);
-
-    dep.plain.nested.run = runStub as typeof dep.plain.nested.run;
-
-    expect(dep.counter as unknown as Counter).toBe(counter);
-    expect((dep.counter as unknown as Counter).current()).toBe(7);
-    expect(dep.plain).not.toBe(plain);
-    expect(dep.plain.nested.run()).toBe(3);
-  });
-
-  describe("partial values", () => {
-    type PartialDependency = {
-      enabled: boolean;
-      count: number;
-      note: string | undefined;
-      nested: {
-        service: {
-          run: () => string;
-        };
-      };
-    };
-
-    test("preserves explicit partial values", () => {
-      const mock = createMock(() => sinon.stub(), { deep: true });
-      const dep = mock<PartialDependency>({
-        enabled: false,
-        count: 0,
-        note: undefined,
-        nested: { service: {} },
-      } as Partial<PartialDependency>);
-
-      expect(dep.enabled).toBe(false);
-      expect(dep.count).toBe(0);
-      expect(dep.note).toBeUndefined();
+      void __typecheckOnly;
     });
 
-    test("lazy-mocks missing deep methods from partial input", () => {
+    test("does not proxy class instances in deep mode", () => {
+      class Counter {
+        private readonly value: number;
+
+        constructor(value: number) {
+          this.value = value;
+        }
+
+        current() {
+          return this.value;
+        }
+      }
+
+      const counter = new Counter(7);
+      const plain = {
+        nested: {},
+      };
+
       const mock = createMock(() => sinon.stub(), { deep: true });
-      const dep = mock<PartialDependency>({
-        enabled: false,
-        count: 0,
-        note: undefined,
-        nested: { service: {} },
-      } as Partial<PartialDependency>);
-      const runStub = sinon.stub().returns("ok");
+      const dep = mock.withDefaults<{
+        counter: Counter;
+        plain: {
+          nested: {
+            run: () => number;
+          };
+        };
+      }>()({ counter, plain });
+      const runStub = sinon.stub().returns(3);
 
-      dep.nested.service.run = runStub as typeof dep.nested.service.run;
+      dep.plain.nested.run = runStub as typeof dep.plain.nested.run;
 
-      expect(dep.nested.service.run()).toBe("ok");
+      expect(dep.counter as unknown as Counter).toBe(counter);
+      expect((dep.counter as unknown as Counter).current()).toBe(7);
+      expect(dep.plain).not.toBe(plain);
+      expect(dep.plain.nested.run()).toBe(3);
+    });
+
+    describe("partial values", () => {
+      type PartialDependency = {
+        enabled: boolean;
+        count: number;
+        note: string | undefined;
+        nested: {
+          service: {
+            run: () => string;
+          };
+        };
+      };
+
+      test("preserves explicit partial values", () => {
+        const mock = createMock(() => sinon.stub(), { deep: true });
+        const dep = mock.withDefaults<PartialDependency>()({
+          enabled: false,
+          count: 0,
+          note: undefined,
+          nested: { service: {} },
+        });
+
+        expect(dep.enabled).toBe(false);
+        expect(dep.count).toBe(0);
+        expect(dep.note).toBeUndefined();
+      });
+
+      test("lazy-mocks missing deep methods from partial input", () => {
+        const mock = createMock(() => sinon.stub(), { deep: true });
+        const dep = mock.withDefaults<PartialDependency>()({
+          enabled: false,
+          count: 0,
+          note: undefined,
+          nested: { service: {} },
+        });
+        const runStub = sinon.stub().returns("ok");
+
+        dep.nested.service.run = runStub as typeof dep.nested.service.run;
+
+        expect(dep.nested.service.run()).toBe("ok");
+      });
     });
   });
 });

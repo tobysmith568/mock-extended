@@ -10,19 +10,15 @@ description: Explore how mock-extended handles lazy mocks, deep recursion, parti
 
 `mock-extended` does not ship its own opinionated mock implementation.
 
-Instead, you provide a factory that returns the mock function type you already
-use in your tests. That keeps the package compatible with Jest, Vitest, Bun,
-Sinon, `node:test`, and custom mock factories that expose callable functions.
+Instead, you provide a factory that returns the mock function type you already use in your tests. That keeps the package compatible with Jest, Vitest, Bun, Sinon, `node:test`, and custom mock factories that expose callable functions.
 
 ## Lazy method creation
 
 Method mocks are created the first time a property is accessed.
 
-That matters for larger interfaces because you do not need to define dozens of
-stub functions up front just to use one or two methods in a test.
+That matters for larger interfaces because you do not need to define dozens of stub functions up front just to use one or two methods in a test.
 
-Repeated access returns the same mock instance, so configuration and assertions
-stay stable:
+Repeated access returns the same mock instance, so configuration and assertions stay stable:
 
 ```ts
 const mock = createMock(createTestMockFunction);
@@ -33,32 +29,37 @@ repo.findById === repo.findById; // true
 
 ## Strong typing for methods
 
-Function properties are exposed as an intersection of the original method type
-and your mock function type. In practice, that means you keep the original call
-signature and the runner-specific mock API on the same value.
+Function properties are exposed as an intersection of the original method type and your mock function type. In practice, that means you keep the original call signature and the runner-specific mock API on the same value.
 
-For example, a Jest-backed method can still be called like the original method
-and configured with `.mockReturnValue(...)`.
+For example, a Jest-backed method can still be called like the original method and configured with `.mockReturnValue(...)`.
 
 ## Partial input support
 
-The builder accepts an optional partial object:
+Use `withDefaults` when you want to provide an explicit partial object:
 
 ```ts
-const userRepo = mock<UserRepo>({
+const userRepo = mock.withDefaults<UserRepo>()({
   connected: false,
   cacheKey: undefined,
 });
 ```
 
-This is useful for mixed dependencies where some fields are fixed values and
-other fields should remain lazily mocked. Falsy values, `null`, and `undefined`
-are preserved.
+This is useful for mixed dependencies where some fields are fixed values and other fields should remain lazily mocked. Falsy values, `null`, and `undefined` are preserved.
+
+Provided function defaults keep their own inferred type, rather than getting a runner mock API:
+
+```ts
+const dep = mock.withDefaults<Dependency>()({
+  doWork: (_arg: string) => 123,
+});
+
+dep.doWork("abc");
+// dep.doWork.mockReturnValue(456); // type error
+```
 
 ## Deep mocking for nested plain objects
 
-Enable `deep: true` when your dependency graph contains nested object shapes and
-you want missing branches to be proxied automatically.
+Enable `deep: true` when your dependency graph contains nested object shapes and you want missing branches to be proxied automatically.
 
 ```ts
 const mock = createMock(() => jest.fn(), { deep: true });
@@ -70,15 +71,11 @@ In deep mode:
 - explicitly provided nested partial values are preserved,
 - built-in instances and class instances are left alone.
 
-That last point is intentional. Objects such as `Date`, `Map`, or your own class
-instances are not rewritten into deep mocks.
+That last point is intentional. Objects such as `Date`, `Map`, or your own class instances are not rewritten into deep mocks.
 
 ## Function property support for deep mode
 
-Callable values with attached properties are common in some APIs. By default,
-deep mode treats a function property as just a function. If you need nested
-members on that function to be deep mocked as well, opt into
-`funcPropSupport: true`.
+Callable values with attached properties are common in some APIs. By default, deep mode treats a function property as just a function. If you need nested members on that function to be deep mocked as well, opt into `funcPropSupport: true`.
 
 ```ts
 const mock = createMock(() => jest.fn(), {
@@ -101,8 +98,7 @@ type Tool = ((id: string) => number) & {
 
 `ignoredProps` lets you exclude specific property names from lazy mocking.
 
-By default, `then` is ignored so a mock cannot accidentally become thenable and
-interfere with Promise behavior.
+By default, `then` is ignored so a mock cannot accidentally become thenable and interfere with Promise behavior.
 
 ```ts
 const mock = createMock(() => jest.fn(), {
@@ -110,9 +106,7 @@ const mock = createMock(() => jest.fn(), {
 });
 ```
 
-You can also use `ignoredProps` with deep function-property support to avoid
-mocking framework internals such as `calls` when you want to keep the real value
-provided by the underlying runner.
+You can also use `ignoredProps` with deep function-property support to avoid mocking framework internals such as `calls` when you want to keep the real value provided by the underlying runner.
 
 ## API options
 
@@ -124,7 +118,4 @@ provided by the underlying runner.
 | `deep`            | `boolean`           | `false`    | Enables deep recursive mocking for nested plain objects.   |
 | `funcPropSupport` | `boolean`           | `false`    | With `deep`, allows deep mocked members on function props. |
 
-The combination of `deep: true` and `funcPropSupport: true` is the most powerful
-mode, but it is also the easiest one to overuse. Start with shallow mocks, add
-deep mode for nested object graphs, and only enable function-property support
-when your dependency shape actually needs it.
+The combination of `deep: true` and `funcPropSupport: true` is the most powerful mode, but it is also the easiest one to overuse. Start with shallow mocks, add deep mode for nested object graphs, and only enable function-property support when your dependency shape actually needs it.
