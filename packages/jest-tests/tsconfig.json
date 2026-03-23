@@ -4,7 +4,6 @@
     "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "Node",
-    "baseUrl": ".",
     "paths": {
       "mock-extended": ["../mock-extended/src/index.ts"]
     },
