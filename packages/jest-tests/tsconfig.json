@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "target": "es2024",
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "paths": {
       "mock-extended": ["../mock-extended/src/index.ts"]
     },
