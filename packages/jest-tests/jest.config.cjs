@@ -6,9 +6,16 @@ module.exports = {
   testMatch: ["**/*.test.ts"],
   transform: {
     "^.+\\.ts$": [
-      "ts-jest",
+      "@swc/jest",
       {
-        tsconfig: "<rootDir>/tsconfig.json",
+        jsc: {
+          parser: {
+            syntax: "typescript",
+          },
+        },
+        module: {
+          type: "commonjs",
+        },
       },
     ],
   },

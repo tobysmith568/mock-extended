@@ -12,9 +12,10 @@
     "mock-extended": "workspace:*"
   },
   "devDependencies": {
+    "@swc/core": "^1.13.6",
+    "@swc/jest": "^0.2.39",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.0.3",
-    "jest": "^30.0.0",
-    "ts-jest": "^29.2.5"
+    "jest": "^30.0.0"
   }
 }
