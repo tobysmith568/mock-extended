@@ -23,7 +23,7 @@
   "[css]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "typescript.format.enable": false,
-  "javascript.format.enable": false,
-  "biome.requireConfiguration": true
+  "biome.requireConfiguration": true,
+  "js/ts.format.enabled": false,
+  "js/ts.tsdk.path": "node_modules/typescript/lib"
 }
