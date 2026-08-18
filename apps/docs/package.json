@@ -12,7 +12,7 @@
     "test": "playwright test"
   },
   "devDependencies": {
-    "@astrojs/mdx": "5.0.6",
+    "@astrojs/mdx": "7.0.6",
     "@astrojs/sitemap": "^3.7.1",
     "@playwright/test": "^1.53.2",
     "astro": "6.1.5",
