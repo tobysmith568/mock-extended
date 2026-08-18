@@ -1,3 +1,4 @@
+import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
@@ -21,23 +22,25 @@ export default defineConfig({
         dark: "github-dark",
       },
     },
-    remarkPlugins: [remarkGfm, remarkSmartypants],
-    rehypePlugins: [
-      rehypeSlug,
-      [
-        rehypeAutolinkHeadings,
-        {
-          behavior: "append",
-          properties: {
-            ariaLabel: "Link to section",
-            className: ["heading-anchor"],
+    processor: unified({
+      remarkPlugins: [remarkGfm, remarkSmartypants],
+      rehypePlugins: [
+        rehypeSlug,
+        [
+          rehypeAutolinkHeadings,
+          {
+            behavior: "append",
+            properties: {
+              ariaLabel: "Link to section",
+              className: ["heading-anchor"],
+            },
+            content: {
+              type: "text",
+              value: " #",
+            },
           },
-          content: {
-            type: "text",
-            value: " #",
-          },
-        },
+        ],
       ],
-    ],
+    }),
   },
 });
