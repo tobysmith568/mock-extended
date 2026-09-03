@@ -55,6 +55,6 @@
     "pack": "npm pack"
   },
   "devDependencies": {
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.23.0"
   }
 }
