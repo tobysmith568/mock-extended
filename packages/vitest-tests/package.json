@@ -2,6 +2,7 @@
   "name": "vitest-tests",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "lint": "biome check .",
     "lint:ci": "biome ci .",
