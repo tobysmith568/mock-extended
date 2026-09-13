@@ -2,6 +2,7 @@
   "name": "vitest-tests",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "lint": "biome check .",
     "lint:ci": "biome ci .",
@@ -13,6 +14,6 @@
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
-    "vitest": "^4.0.0"
+    "vitest": "^5.0.0"
   }
 }
