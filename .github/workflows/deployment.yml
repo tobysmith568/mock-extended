@@ -42,7 +42,7 @@ jobs:
         run: bun pm version ${{ inputs.version }} --no-git-tag-version
 
       - name: Calculate npm tag
-        uses: tobysmith568/npm-publish-latest-tag@v1
+        uses: tobysmith568/npm-publish-latest-tag@v2
         id: npm_tag
         with:
           package-json: ./packages/mock-extended/package.json
