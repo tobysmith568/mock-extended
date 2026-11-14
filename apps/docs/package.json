@@ -12,8 +12,8 @@
     "test": "playwright test"
   },
   "devDependencies": {
-    "@astrojs/markdown-remark": "7.3.5",
-    "@astrojs/mdx": "8.1.2",
+    "@astrojs/markdown-remark": "7.3.7",
+    "@astrojs/mdx": "8.1.4",
     "@astrojs/sitemap": "^3.7.4",
     "@playwright/test": "^1.53.2",
     "astro": "7.4.5",
